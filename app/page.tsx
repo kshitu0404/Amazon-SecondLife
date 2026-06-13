@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Laptop, Smartphone, Camera, Shirt, Gift, Sparkles, Star, Heart, BookmarkCheck, ChevronLeft, ChevronRight, ShoppingCart, Leaf, Cpu } from 'lucide-react';
 import { mockProducts } from '@/data/mockProducts';
@@ -11,7 +11,13 @@ import { useCart } from '@/src/context/CartContext';
 export default function Home() {
   const router = useRouter();
   const { addToCart } = useCart();
-  const featured = mockProducts.slice(0, 5); // Display 5 items like the mockup
+  const featured = mockProducts.slice(0, 5);
+  // Stable review counts — computed once, never changes between server and client
+  const reviewCounts = useMemo(
+    () => featured.map((p) => 20 + (p.id.charCodeAt(5) % 80)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   // Mockup category cards config
@@ -252,7 +258,7 @@ export default function Home() {
                         <span className="text-amber-600 font-extrabold text-[11px] mt-0.5">
                           {product.healthCard.sustainabilityRating}
                         </span>
-                        <span className="text-slate-400 text-[10px]">({Math.round(20 + Math.random() * 80)})</span>
+                        <span className="text-slate-400 text-[10px]">({reviewCounts[featured.indexOf(product)]})</span>
                       </div>
                     </div>
                   </div>
