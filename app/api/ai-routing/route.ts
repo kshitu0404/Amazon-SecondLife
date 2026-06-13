@@ -5,9 +5,13 @@ const apiKey = process.env.GROQ_API_KEY || '';
 const groq = apiKey ? new Groq({ apiKey }) : null;
 
 export async function POST(req: NextRequest) {
+  let userCity = '';
+  let warehouseCity = '';
   try {
     const body = await req.json();
-    const { userCity, userPincode, warehouseCity, productId } = body;
+    userCity = body.userCity || '';
+    warehouseCity = body.warehouseCity || '';
+    const { userPincode, productId } = body;
 
     if (!groq) {
       // Mock fallback if no API key is provided
@@ -51,15 +55,20 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error generating AI routing:', error);
-    // Fallback response in case of error
+    console.error('Error generating AI routing (applying fallback):', error);
+    
+    // Graceful fallback with 200 status to prevent frontend crashes/errors
+    const isLocal = userCity?.toLowerCase() === warehouseCity?.toLowerCase();
+    const days = isLocal ? 1 : 3;
+    const deliveryDate = new Date();
+    deliveryDate.setDate(deliveryDate.getDate() + days);
+
     return NextResponse.json({
-      days: 3,
-      dateString: "Standard Delivery",
-      isLocal: false,
-      co2Offset: 0,
-      routingDiagnostic: "Standard fallback routing applied due to error.",
-      error: "AI diagnostic unavailable."
-    }, { status: 500 });
+      days,
+      dateString: deliveryDate.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' }),
+      isLocal,
+      co2Offset: 5.2,
+      routingDiagnostic: "Standard fallback routing applied due to API error."
+    });
   }
 }
