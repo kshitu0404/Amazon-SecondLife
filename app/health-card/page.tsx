@@ -13,7 +13,7 @@ export default function HealthCardPage() {
     <React.Suspense fallback={
       <div className="flex-grow flex items-center justify-center p-8">
         <div className="flex flex-col items-center gap-3 text-center">
-          <RefreshCw className="w-10 h-10 text-[#ff9900] animate-spin" />
+          <RefreshCw className="w-10 h-10 text-amazon-orange animate-spin" />
           <p className="text-slate-500 text-sm font-semibold">Generating Passport Ledgers...</p>
         </div>
       </div>
@@ -60,7 +60,7 @@ function HealthCardContent() {
         {/* Header with Selector */}
         <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-100 pb-4">
         <div>
-          <span className="bg-[#ff9900]/10 text-[#ff9900] border border-[#ff9900]/20 text-xs font-bold py-0.5 px-2 rounded-md uppercase tracking-wider inline-block mb-1">
+          <span className="bg-amazon-orange/10 text-amazon-orange border border-amazon-orange/20 text-xs font-bold py-0.5 px-2 rounded-md uppercase tracking-wider inline-block mb-1">
             ♻ Digital Product Passport (DPP)
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -77,7 +77,7 @@ function HealthCardContent() {
               const selectedId = e.target.value;
               router.push(`/health-card?id=${selectedId}`);
             }}
-            className="border border-slate-300 text-xs font-bold rounded-lg px-3 py-2 bg-white text-slate-700 outline-none cursor-pointer focus:border-[#ff9900]"
+            className="border border-slate-300 text-xs font-bold rounded-lg px-3 py-2 bg-white text-slate-700 outline-none cursor-pointer focus:border-amazon-orange"
           >
             <optgroup label="Uploaded Items">
               {product.id.startsWith('prod-17') && (
@@ -100,7 +100,7 @@ function HealthCardContent() {
         {/* Left Side: Product passport card */}
         <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
           {/* Card header */}
-          <div className="bg-[#131921] text-white p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="bg-amazon-blue text-white p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <span className="text-xs uppercase font-extrabold text-[#10b981] tracking-wider">
                 Category: {category}
@@ -109,7 +109,7 @@ function HealthCardContent() {
               <p className="text-xs text-slate-400">Owner Ledger: {product.sellerName || 'Anonymous'}</p>
             </div>
             
-            <div className="shrink-0 flex items-center gap-2.5 bg-[#232f3e] px-4 py-2 rounded-xl border border-slate-700">
+            <div className="shrink-0 flex items-center gap-2.5 bg-amazon-secondary px-4 py-2 rounded-xl border border-slate-700">
               <QrCode className="w-10 h-10 text-white" />
               <div className="text-xs text-slate-300 font-extrabold leading-normal">
                 <p>SCAN PASSPORT</p>

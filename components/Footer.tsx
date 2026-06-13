@@ -13,7 +13,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#232f3e] text-slate-300 text-sm mt-auto w-full">
+    <footer className="bg-amazon-secondary text-slate-300 text-sm mt-auto w-full">
       {/* Back to top banner */}
       <button
         onClick={scrollToTop}
@@ -70,7 +70,7 @@ export default function Footer() {
       </div>
 
       {/* Country / Currency Selectors */}
-      <div className="border-t border-slate-700 py-6 bg-[#232f3e] flex flex-wrap justify-center items-center gap-6 text-xs text-slate-300">
+      <div className="border-t border-slate-700 py-6 bg-amazon-secondary flex flex-wrap justify-center items-center gap-6 text-xs text-slate-300">
         <div className="flex items-center gap-1.5 select-none font-bold text-white">
           <span>amazon</span>
           <span className="text-[#10b981] flex items-center gap-0.5">

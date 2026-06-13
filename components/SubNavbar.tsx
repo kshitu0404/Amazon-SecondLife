@@ -24,7 +24,7 @@ export default function SubNavbar() {
   ];
 
   return (
-    <div className="bg-[#232f3e] text-white flex items-center justify-between px-4 py-1.5 h-10 w-full select-none text-xs font-semibold shrink-0 border-b border-[#19222d]/30">
+    <div className="bg-amazon-secondary text-white flex items-center justify-between px-4 py-1.5 h-10 w-full select-none text-xs font-semibold shrink-0 border-b border-[#19222d]/30">
       {/* Left Menu Section */}
       <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar py-0.5">
         {/* Toggle Hamburger */}

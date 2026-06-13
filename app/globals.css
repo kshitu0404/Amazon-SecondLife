@@ -12,6 +12,12 @@
   --font-mono: var(--font-geist-mono);
   --font-cursive: var(--font-caveat);
   
+  /* Amazon Theme Colors */
+  --color-amazon-blue: #131921;
+  --color-amazon-secondary: #232f3e;
+  --color-amazon-orange: #ff9900;
+  --color-amazon-orange-hover: #e68a00;
+  
   /* Custom slate scale variables to support legacy Tailwind styling and fix text contrast */
   --color-slate-150: #f1f5f9;
   --color-slate-250: #e2e8f0;
@@ -20,6 +26,7 @@
   --color-slate-750: #1e293b;
   --color-slate-850: #0f172a;
 }
+
 
 @media (prefers-color-scheme: dark) {
   :root {

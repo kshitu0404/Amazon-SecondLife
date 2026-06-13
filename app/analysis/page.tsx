@@ -72,7 +72,7 @@ export default function AnalysisPage() {
           </button>
           <Link
             href="/routing"
-            className="bg-[#ff9900] hover:bg-[#e68a00] text-black font-bold py-2 px-4 rounded-lg transition text-xs flex items-center gap-1.5 shadow"
+            className="bg-amazon-orange hover:bg-amazon-orange-hover text-black font-bold py-2 px-4 rounded-lg transition text-xs flex items-center gap-1.5 shadow"
           >
             Smart Routing Dashboard <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -225,7 +225,7 @@ export default function AnalysisPage() {
             <div className={`p-4 rounded-lg border border-amber-300 bg-amber-50/65 text-slate-800 space-y-2 transition duration-500 ${
               activeStep >= 4 ? 'scale-100 opacity-100' : 'scale-98 opacity-0'
             }`}>
-              <h4 className="text-xs uppercase font-extrabold text-[#e68a00] flex items-center gap-1 tracking-wider">
+              <h4 className="text-xs uppercase font-extrabold text-amazon-orange-hover flex items-center gap-1 tracking-wider">
                 <AlertTriangle className="w-4 h-4 fill-amber-100" /> Overall System Recommendation
               </h4>
               <p className="text-xs font-bold leading-relaxed">
@@ -235,7 +235,7 @@ export default function AnalysisPage() {
           </div>
 
           {/* Action CTAs Dashboard card */}
-          <div className="bg-[#232f3e] text-white rounded-xl p-6 border border-slate-700 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="bg-amazon-secondary text-white rounded-xl p-6 border border-slate-700 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="text-left space-y-1">
               <span className="text-xs text-[#10b981] font-bold flex items-center gap-0.5">
                 <ShieldCheck className="w-4 h-4" /> Next Step Program
@@ -256,7 +256,7 @@ export default function AnalysisPage() {
               
               <Link
                 href="/routing"
-                className="flex items-center justify-center gap-1 bg-[#ff9900] hover:bg-[#e68a00] text-black font-bold py-2.5 px-4.5 rounded-lg transition text-xs shadow w-full sm:w-auto"
+                className="flex items-center justify-center gap-1 bg-amazon-orange hover:bg-amazon-orange-hover text-black font-bold py-2.5 px-4.5 rounded-lg transition text-xs shadow w-full sm:w-auto"
               >
                 Go to Smart Routing <ArrowRight className="w-3.5 h-3.5" />
               </Link>

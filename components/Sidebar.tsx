@@ -71,7 +71,7 @@ export default function Sidebar() {
         }`}
       >
         {/* User Greeting Profile Header */}
-        <div className="bg-[#232f3e] text-white px-8 py-4 flex items-center justify-between shrink-0">
+        <div className="bg-amazon-secondary text-white px-8 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
               <User className="w-4.5 h-4.5 text-white" />

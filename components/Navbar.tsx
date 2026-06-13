@@ -3,12 +3,15 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, ShoppingCart, ChevronDown, MapPin, Globe, Leaf } from 'lucide-react';
+import { Search, ShoppingCart, ChevronDown, Globe, Leaf } from 'lucide-react';
+import LocationSelector from '@/src/components/LocationSelector';
+import { useCart } from '@/src/context/CartContext';
 
 export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCategory, setSearchCategory] = useState('All');
   const router = useRouter();
+  const { cartCount } = useCart();
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,36 +23,27 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-[#131921] text-white flex items-center justify-between px-4 py-2 h-16 w-full select-none shrink-0 gap-4">
+    <header className="bg-amazon-blue text-white flex items-center justify-between px-4 py-2 h-16 w-full select-none shrink-0 gap-4">
       {/* Left Area: Logo & Location */}
       <div className="flex items-center gap-4">
         {/* Amazon Logo with SecondLife Tagline */}
         <Link href="/" className="flex items-center gap-1 border border-transparent hover:border-white px-2 py-1.5 rounded transition">
           <div className="flex flex-col items-start leading-none pt-1">
-            <span className="text-xl font-bold tracking-tight text-white select-none">amazon<span className="text-[#ff9900] font-medium text-sm">.in</span></span>
-            <span className="text-[10px] font-bold text-[#ff9900] tracking-wide mt-[-2px] ml-0.5 flex items-center gap-0.5">
+            <span className="text-xl font-bold tracking-tight text-white select-none">amazon<span className="text-amazon-orange font-medium text-sm">.in</span></span>
+            <span className="text-[10px] font-bold text-amazon-orange tracking-wide mt-[-2px] ml-0.5 flex items-center gap-0.5">
               SecondLife <Leaf className="w-2.5 h-2.5 fill-amber-500/10" />
             </span>
           </div>
         </Link>
 
-        {/* Deliver-to Location Pin */}
-        <div 
-          onClick={() => alert('Demo Location Selector: Shipping set to Delhi 110020')}
-          className="hidden md:flex items-center gap-1 border border-transparent hover:border-white px-2 py-1.5 rounded transition cursor-pointer text-left"
-        >
-          <MapPin className="w-4.5 h-4.5 text-white mt-2.5 shrink-0" />
-          <div className="flex flex-col text-[11px] leading-tight mt-1">
-            <span className="text-slate-300">Deliver to Rohan</span>
-            <span className="text-white font-extrabold">Delhi 110020</span>
-          </div>
-        </div>
+        {/* Dynamic Location Pin Selector */}
+        <LocationSelector />
       </div>
 
       {/* Center Area: Search Bar (Authentic Amazon style) */}
       <form 
         onSubmit={handleSearchSubmit} 
-        className="flex flex-grow max-w-2xl h-10 rounded-md overflow-hidden bg-white border border-transparent focus-within:ring-2 focus-within:ring-[#ff9900] shadow-sm items-center"
+        className="flex flex-grow max-w-2xl h-10 rounded-md overflow-hidden bg-white border border-transparent focus-within:ring-2 focus-within:ring-amazon-orange shadow-sm items-center"
       >
         {/* Category select dropdown (left side of input) */}
         <div className="relative h-full flex items-center bg-[#f3f3f3] border-r border-[#cdcdcd] hover:bg-[#dadada] transition cursor-pointer rounded-l-md shrink-0">
@@ -114,21 +108,23 @@ export default function Navbar() {
           href="/marketplace"
           className="hidden lg:flex flex-col text-left border border-transparent hover:border-white px-2 py-1.5 rounded transition cursor-pointer leading-tight"
         >
-          <span className="text-[11px] text-[#ff9900] font-bold">New</span>
+          <span className="text-[11px] text-amazon-orange font-bold">New</span>
           <span className="text-xs font-extrabold text-white">SecondLife</span>
         </Link>
 
         {/* Shopping Cart Icon (outline style with circular badge) */}
         <button
-          onClick={() => router.push('/marketplace')}
+          onClick={() => router.push('/cart')}
           className="relative flex items-center gap-1.5 border border-transparent hover:border-white px-2.5 py-2 rounded transition cursor-pointer text-xs font-extrabold"
           title="Cart"
         >
           <div className="relative">
             <ShoppingCart className="w-6 h-6 text-white stroke-[1.8]" />
-            <span className="absolute -top-1 right-2 bg-gradient-to-r from-amber-500 to-amber-600 text-[#131921] text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center leading-none border-2 border-[#131921] translate-x-1.5">
-              1
-            </span>
+            {cartCount > 0 && (
+              <span className="absolute -top-1 right-2 bg-gradient-to-r from-amber-500 to-amber-600 text-amazon-blue text-[10px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center leading-none border-2 border-amazon-blue translate-x-1.5">
+                {cartCount}
+              </span>
+            )}
           </div>
           <span className="text-white mt-3 hidden sm:inline">Cart</span>
         </button>

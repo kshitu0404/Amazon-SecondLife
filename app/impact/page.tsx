@@ -128,7 +128,7 @@ export default function ImpactPage() {
       {/* Calculator Section */}
       <section className="bg-slate-50/40 border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm text-left">
         <h3 className="font-extrabold text-base sm:text-lg text-slate-900 mb-6 flex items-center gap-2">
-          <Calculator className="w-5.5 h-5.5 text-[#ff9900]" />
+          <Calculator className="w-5.5 h-5.5 text-amazon-orange" />
           My Personal Circular Savings Calculator
         </h3>
 
@@ -146,7 +146,7 @@ export default function ImpactPage() {
                   max="15"
                   value={calcElectronics}
                   onChange={(e) => setCalcElectronics(Number(e.target.value))}
-                  className="w-full accent-[#ff9900] cursor-pointer h-1.5 bg-slate-200 rounded"
+                  className="w-full accent-amazon-orange cursor-pointer h-1.5 bg-slate-200 rounded"
                 />
                 <span className="text-sm font-black text-slate-900 w-8 text-center">{calcElectronics}</span>
               </div>
@@ -163,7 +163,7 @@ export default function ImpactPage() {
                   max="15"
                   value={calcHome}
                   onChange={(e) => setCalcHome(Number(e.target.value))}
-                  className="w-full accent-[#ff9900] cursor-pointer h-1.5 bg-slate-200 rounded"
+                  className="w-full accent-amazon-orange cursor-pointer h-1.5 bg-slate-200 rounded"
                 />
                 <span className="text-sm font-black text-slate-900 w-8 text-center">{calcHome}</span>
               </div>
@@ -180,7 +180,7 @@ export default function ImpactPage() {
                   max="20"
                   value={calcApparel}
                   onChange={(e) => setCalcApparel(Number(e.target.value))}
-                  className="w-full accent-[#ff9900] cursor-pointer h-1.5 bg-slate-200 rounded"
+                  className="w-full accent-amazon-orange cursor-pointer h-1.5 bg-slate-200 rounded"
                 />
                 <span className="text-sm font-black text-slate-900 w-8 text-center">{calcApparel}</span>
               </div>

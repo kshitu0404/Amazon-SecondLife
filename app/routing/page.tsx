@@ -105,7 +105,7 @@ export default function RoutingPage() {
                 setProduct(found);
               }
             }}
-            className="border border-slate-300 text-xs font-bold rounded-lg px-3 py-2 bg-white text-slate-700 outline-none cursor-pointer focus:border-[#ff9900]"
+            className="border border-slate-300 text-xs font-bold rounded-lg px-3 py-2 bg-white text-slate-700 outline-none cursor-pointer focus:border-amazon-orange"
           >
             {mockProducts.map((p) => (
               <option key={p.id} value={p.id}>
@@ -189,7 +189,7 @@ export default function RoutingPage() {
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
             <h3 className="font-extrabold text-sm text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center gap-1.5">
-              <BarChart className="w-5 h-5 text-[#ff9900]" /> Comparative Route Audit
+              <BarChart className="w-5 h-5 text-amazon-orange" /> Comparative Route Audit
             </h3>
 
             {/* List of 5 routes */}
@@ -234,7 +234,7 @@ export default function RoutingPage() {
           </div>
 
           {/* Quick CTA to Health card or Marketplace */}
-          <div className="bg-[#232f3e] text-white rounded-xl p-5 border border-slate-700 shadow-sm space-y-3.5">
+          <div className="bg-amazon-secondary text-white rounded-xl p-5 border border-slate-700 shadow-sm space-y-3.5">
             <h4 className="font-bold text-xs text-amber-400 uppercase tracking-wider flex items-center gap-1">
               <Sparkles className="w-4 h-4 fill-amber-400/20" /> Circular Hub Logistics
             </h4>

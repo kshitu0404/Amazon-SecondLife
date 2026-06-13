@@ -138,7 +138,7 @@ export default function UploadPage() {
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-300 hover:border-[#ff9900] rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition bg-white hover:bg-slate-50/80"
+                  className="border-2 border-dashed border-slate-300 hover:border-amazon-orange rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition bg-white hover:bg-slate-50/80"
                 >
                   <Upload className="w-10 h-10 text-slate-400 mb-3" />
                   <p className="text-sm font-semibold text-slate-700">
@@ -185,7 +185,7 @@ export default function UploadPage() {
                 placeholder="e.g. Apple iPad Pro 11-inch (3rd Gen) 128GB Wi-Fi"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
-                className="w-full border border-slate-300 focus:border-[#ff9900] rounded-lg px-3.5 py-2.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-[#ff9900]"
+                className="w-full border border-slate-300 focus:border-amazon-orange rounded-lg px-3.5 py-2.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-amazon-orange"
               />
             </div>
 
@@ -199,7 +199,7 @@ export default function UploadPage() {
                   id="category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full border border-slate-300 focus:border-[#ff9900] rounded-lg px-3 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#ff9900] bg-white cursor-pointer"
+                  className="w-full border border-slate-300 focus:border-amazon-orange rounded-lg px-3 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-1 focus:ring-amazon-orange bg-white cursor-pointer"
                 >
                   <option>Electronics</option>
                   <option>Home & Kitchen</option>
@@ -230,7 +230,7 @@ export default function UploadPage() {
                 placeholder="Mention any scratches, missing parts, or signs of use (e.g. 'Minor scratching on bottom bezel, original box missing but power brick is included')."
                 value={conditionNotes}
                 onChange={(e) => setConditionNotes(e.target.value)}
-                className="w-full border border-slate-300 focus:border-[#ff9900] rounded-lg px-3.5 py-2.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-[#ff9900] resize-y"
+                className="w-full border border-slate-300 focus:border-amazon-orange rounded-lg px-3.5 py-2.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-1 focus:ring-amazon-orange resize-y"
               />
             </div>
 
@@ -238,7 +238,7 @@ export default function UploadPage() {
             <button
               type="submit"
               disabled={isUploading || !productName.trim()}
-              className="w-full bg-[#ff9900] hover:bg-[#e68a00] text-black font-bold py-3 px-6 rounded-lg shadow hover:shadow-md transition text-sm flex items-center justify-center gap-2 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full bg-amazon-orange hover:bg-amazon-orange-hover text-black font-bold py-3 px-6 rounded-lg shadow hover:shadow-md transition text-sm flex items-center justify-center gap-2 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed cursor-pointer"
             >
               Analyze with Amazon AI <ArrowRight className="w-4 h-4" />
             </button>
@@ -247,7 +247,7 @@ export default function UploadPage() {
 
         {/* Info/Guide Panel */}
         <div className="space-y-6">
-          <div className="bg-[#232f3e] text-white rounded-xl p-5 border border-slate-700 shadow-sm">
+          <div className="bg-amazon-secondary text-white rounded-xl p-5 border border-slate-700 shadow-sm">
             <h3 className="font-bold text-base mb-3 flex items-center gap-1.5 text-amber-400">
               <Sparkles className="w-5 h-5 fill-amber-400/20" /> How scanning works
             </h3>
@@ -286,8 +286,8 @@ export default function UploadPage() {
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 flex flex-col items-center text-center space-y-4 animate-scale-up">
             <div className="relative w-20 h-20 flex items-center justify-center">
               {/* Outer circular spinner */}
-              <div className="absolute inset-0 rounded-full border-4 border-slate-200 border-t-[#ff9900] animate-spin" />
-              <Package className="w-8 h-8 text-[#ff9900]" />
+              <div className="absolute inset-0 rounded-full border-4 border-slate-200 border-t-amazon-orange animate-spin" />
+              <Package className="w-8 h-8 text-amazon-orange" />
             </div>
 
             <div className="space-y-1.5">
@@ -300,7 +300,7 @@ export default function UploadPage() {
             {/* Progress Bar Container */}
             <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-[#ff9900] to-[#10b981] h-full transition-all duration-150 ease-out"
+                className="bg-gradient-to-r from-amazon-orange to-[#10b981] h-full transition-all duration-150 ease-out"
                 style={{ width: `${uploadProgress}%` }}
               />
             </div>

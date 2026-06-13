@@ -5,9 +5,12 @@ import { useRouter } from 'next/navigation';
 import { Laptop, Smartphone, Camera, Shirt, Gift, Sparkles, Star, Heart, BookmarkCheck, ChevronLeft, ChevronRight, ShoppingCart, Leaf, Cpu } from 'lucide-react';
 import { mockProducts } from '@/data/mockProducts';
 import { formatPrice, getConditionColorClass, getConditionLabel } from '@/lib/utils';
+import { DeliveryBadge } from '@/src/components/DeliveryBadge';
+import { useCart } from '@/src/context/CartContext';
 
 export default function Home() {
   const router = useRouter();
+  const { addToCart } = useCart();
   const featured = mockProducts.slice(0, 5); // Display 5 items like the mockup
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
@@ -81,7 +84,7 @@ export default function Home() {
 
             <button
               onClick={() => router.push(slides[activeSlide].link)}
-              className="bg-[#131921] hover:bg-[#232f3e] text-white text-xs font-extrabold py-3 px-7 rounded-md shadow transition transform active:scale-95 cursor-pointer mt-2"
+              className="bg-amazon-blue hover:bg-amazon-secondary text-white text-xs font-extrabold py-3 px-7 rounded-md shadow transition transform active:scale-95 cursor-pointer mt-2"
             >
               {slides[activeSlide].buttonText}
             </button>
@@ -275,27 +278,32 @@ export default function Home() {
                         onClick={(e) => e.stopPropagation()} 
                         className="flex items-center gap-1.5 text-xs"
                       >
-                        <span className="text-slate-400 font-bold">Qty:</span>
-                        <div className="flex items-center border border-slate-300 rounded overflow-hidden bg-slate-50">
+                        <span className="text-amazon-secondary font-extrabold">Qty:</span>
+                        <div className="flex items-center border border-amazon-secondary rounded overflow-hidden bg-amazon-secondary text-white shadow-xs">
                           <button 
                             type="button" 
                             onClick={() => handleQtyChange(product.id, -1)}
-                            className="px-1.5 py-0.5 hover:bg-slate-200 transition font-extrabold cursor-pointer"
+                            className="px-2 py-0.5 hover:bg-amazon-blue text-white transition font-extrabold cursor-pointer"
                           >
                             -
                           </button>
-                          <span className="px-2 py-0.5 bg-white font-extrabold text-[11px] border-x border-slate-200 min-w-4 text-center">
+                          <span className="px-2 py-0.5 bg-amazon-blue text-white font-extrabold text-[11px] border-x border-amazon-secondary min-w-4 text-center">
                             {qty}
                           </span>
                           <button 
                             type="button" 
                             onClick={() => handleQtyChange(product.id, 1)}
-                            className="px-1.5 py-0.5 hover:bg-slate-200 transition font-extrabold cursor-pointer"
+                            className="px-2 py-0.5 hover:bg-amazon-blue text-white transition font-extrabold cursor-pointer"
                           >
                             +
                           </button>
                         </div>
                       </div>
+                    </div>
+                    
+                    {/* AI Delivery Routing Badge */}
+                    <div className="px-1 pt-1 border-t border-slate-100">
+                      <DeliveryBadge productId={product.id} />
                     </div>
 
                     {/* Yellow Add to Cart Button */}
@@ -303,7 +311,7 @@ export default function Home() {
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert(`Added ${qty} unit(s) of ${product.name} to Cart!`);
+                        addToCart(product, qty);
                       }}
                       className="w-full bg-[#ffd814] hover:bg-[#f7ca00] active:bg-[#f0c14b] border border-[#a88734] rounded-md py-1.5 px-3 text-xs font-bold text-slate-900 transition mt-3.5 flex items-center justify-center gap-1 cursor-pointer shadow-xs active:shadow-inner"
                     >
@@ -318,7 +326,7 @@ export default function Home() {
 
         {/* Corporate AI Inspector banner */}
         <div className="bg-[#19222d] text-slate-300 rounded-xl p-6 border border-slate-800 flex flex-col sm:flex-row items-center gap-6 mt-4 shadow">
-          <div className="w-12 h-12 bg-[#232f3e] rounded-xl flex items-center justify-center shrink-0 border border-slate-700 text-[#10b981]">
+          <div className="w-12 h-12 bg-amazon-secondary rounded-xl flex items-center justify-center shrink-0 border border-slate-700 text-[#10b981]">
             <Cpu className="w-6 h-6 stroke-[1.5]" />
           </div>
           <div className="text-left space-y-1">

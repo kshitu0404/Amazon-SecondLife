@@ -5,6 +5,8 @@ import Navbar from "@/components/Navbar";
 import SubNavbar from "@/components/SubNavbar";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import { LocationProvider } from "@/src/context/LocationContext";
+import { CartProvider } from "@/src/context/CartContext";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -38,13 +40,17 @@ export default function RootLayout({
       className={`${outfit.variable} ${geistMono.variable} ${caveat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#eaeded] text-slate-900 font-sans">
-        <Navbar />
-        <SubNavbar />
-        <Sidebar />
-        <main className="flex-grow flex flex-col w-full">
-          {children}
-        </main>
-        <Footer />
+        <CartProvider>
+          <LocationProvider>
+            <Navbar />
+            <SubNavbar />
+            <Sidebar />
+            <main className="flex-grow flex flex-col w-full">
+              {children}
+            </main>
+            <Footer />
+          </LocationProvider>
+        </CartProvider>
       </body>
     </html>
   );

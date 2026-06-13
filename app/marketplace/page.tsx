@@ -7,13 +7,15 @@ import { ShieldCheck, Leaf, Filter, RefreshCw, Star, ShoppingCart, ArrowRight } 
 import { Product } from '@/types';
 import { mockProducts } from '@/data/mockProducts';
 import { formatPrice, getConditionColorClass, getConditionLabel } from '@/lib/utils';
+import { DeliveryBadge } from '@/src/components/DeliveryBadge';
+import { useCart } from '@/src/context/CartContext';
 
 export default function MarketplacePage() {
   return (
     <React.Suspense fallback = {
       <div className="flex-grow flex items-center justify-center p-8">
         <div className="flex flex-col items-center gap-3 text-center">
-          <RefreshCw className="w-10 h-10 text-[#ff9900] animate-spin" />
+          <RefreshCw className="w-10 h-10 text-amazon-orange animate-spin" />
           <p className="text-slate-500 text-sm font-semibold">Loading Circular Marketplace...</p>
         </div>
       </div>
@@ -26,6 +28,7 @@ export default function MarketplacePage() {
 function MarketplaceContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { addToCart } = useCart();
 
   // State
   const [products, setProducts] = useState<Product[]>([]);
@@ -88,7 +91,9 @@ function MarketplaceContent() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
-        (p) => p.name.toLowerCase().includes(q) || p.conditionNotes.toLowerCase().includes(q)
+        (p) => p.name.toLowerCase().includes(q) || 
+               p.conditionNotes.toLowerCase().includes(q) || 
+               p.category.toLowerCase().includes(q)
       );
     }
 
@@ -144,7 +149,7 @@ function MarketplaceContent() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 cursor-pointer text-slate-705 outline-none focus:border-[#ff9900] font-bold"
+            className="border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 cursor-pointer text-slate-705 outline-none focus:border-amazon-orange font-bold"
           >
             <option value="featured">Featured Hub</option>
             <option value="price-low">Price: Low to High</option>
@@ -183,8 +188,8 @@ function MarketplaceContent() {
                     setSelectedCategory(cat);
                     router.push(cat === 'All' ? '/marketplace' : `/marketplace?category=${encodeURIComponent(cat)}`);
                   }}
-                  className={`text-left hover:text-[#ff9900] transition cursor-pointer ${
-                    selectedCategory === cat ? 'font-black text-[#ff9900] pl-1 border-l-2 border-[#ff9900]' : ''
+                  className={`text-left hover:text-amazon-orange transition cursor-pointer ${
+                    selectedCategory === cat ? 'font-black text-amazon-orange pl-1 border-l-2 border-amazon-orange' : ''
                   }`}
                 >
                   {cat === 'Home & Kitchen' ? 'Kitchen' : cat === 'Books/Media' ? 'Books' : cat}
@@ -201,8 +206,8 @@ function MarketplaceContent() {
                 <button
                   key={cond}
                   onClick={() => setSelectedCondition(cond)}
-                  className={`text-left hover:text-[#ff9900] transition cursor-pointer ${
-                    selectedCondition === cond ? 'font-black text-[#ff9900] pl-1 border-l-2 border-[#ff9900]' : ''
+                  className={`text-left hover:text-amazon-orange transition cursor-pointer ${
+                    selectedCondition === cond ? 'font-black text-amazon-orange pl-1 border-l-2 border-amazon-orange' : ''
                   }`}
                 >
                   {cond === 'All' ? 'All Grades' : getConditionLabel(cond as Product['condition'])}
@@ -224,7 +229,7 @@ function MarketplaceContent() {
               step="10"
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="w-full accent-[#ff9900] cursor-pointer h-1.5 bg-slate-200 rounded"
+              className="w-full accent-amazon-orange cursor-pointer h-1.5 bg-slate-200 rounded"
             />
           </div>
 
@@ -323,6 +328,9 @@ function MarketplaceContent() {
                           <Leaf className="w-3.5 h-3.5 fill-emerald-500/10" />
                           <span>Offset: {product.co2SavedKg} kg CO2</span>
                         </div>
+                        
+                        {/* AI Delivery Routing Badge */}
+                        <DeliveryBadge productId={product.id} />
                       </div>
                     </div>
 
@@ -343,22 +351,22 @@ function MarketplaceContent() {
                           onClick={(e) => e.stopPropagation()} 
                           className="flex items-center gap-1.5 text-xs"
                         >
-                          <span className="text-slate-400 font-bold">Qty:</span>
-                          <div className="flex items-center border border-slate-300 rounded overflow-hidden bg-slate-50">
+                          <span className="text-amazon-secondary font-extrabold">Qty:</span>
+                          <div className="flex items-center border border-amazon-secondary rounded overflow-hidden bg-amazon-secondary text-white shadow-xs">
                             <button 
                               type="button" 
                               onClick={() => handleQtyChange(product.id, -1)}
-                              className="px-1.5 py-0.5 hover:bg-slate-200 transition font-extrabold cursor-pointer"
+                              className="px-2 py-0.5 hover:bg-amazon-blue text-white transition font-extrabold cursor-pointer"
                             >
                               -
                             </button>
-                            <span className="px-2 py-0.5 bg-white font-extrabold text-[11px] border-x border-slate-200 min-w-4 text-center">
+                            <span className="px-2 py-0.5 bg-amazon-blue text-white font-extrabold text-[11px] border-x border-amazon-secondary min-w-4 text-center">
                               {qty}
                             </span>
                             <button 
                               type="button" 
                               onClick={() => handleQtyChange(product.id, 1)}
-                              className="px-1.5 py-0.5 hover:bg-slate-200 transition font-extrabold cursor-pointer"
+                              className="px-2 py-0.5 hover:bg-amazon-blue text-white transition font-extrabold cursor-pointer"
                             >
                               +
                             </button>
@@ -377,7 +385,7 @@ function MarketplaceContent() {
                         
                         <button
                           type="button"
-                          onClick={() => alert(`Added ${qty} unit(s) of ${product.name} to Cart!`)}
+                          onClick={() => addToCart(product, qty)}
                           className="col-span-2 bg-[#ffd814] hover:bg-[#f7ca00] active:bg-[#f0c14b] border border-[#a88734] rounded py-2 px-2 text-[11px] font-bold text-slate-900 transition flex items-center justify-center gap-1 cursor-pointer shadow-xs active:shadow-inner"
                         >
                           <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
