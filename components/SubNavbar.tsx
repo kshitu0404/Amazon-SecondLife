@@ -20,6 +20,7 @@ export default function SubNavbar() {
     { label: 'AI Diagnostics', href: '/analysis' },
     { label: 'Smart Routing', href: '/routing' },
     { label: 'Product Passports', href: '/health-card' },
+    { label: 'Circle Exchange', href: '/circle-exchange' },
     { label: 'Sustainability Ledger', href: '/impact' },
   ];
 

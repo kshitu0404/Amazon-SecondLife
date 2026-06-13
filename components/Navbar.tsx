@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Search, ShoppingCart, ChevronDown, Globe, Leaf } from 'lucide-react';
 import LocationSelector from '@/src/components/LocationSelector';
 import { useCart } from '@/src/context/CartContext';
@@ -11,6 +11,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCategory, setSearchCategory] = useState('All');
   const router = useRouter();
+  const pathname = usePathname();
   const { cartCount } = useCart();
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -112,6 +113,21 @@ export default function Navbar() {
           <span className="text-[11px] text-slate-300">Command Center</span>
           <span className="text-xs font-extrabold text-white flex items-center gap-0.5">
             Admin Portal
+          </span>
+        </Link>
+
+        {/* Seller Copilot Link */}
+        <Link 
+          href="/seller-dashboard"
+          className={`hidden sm:flex flex-col text-left border border-transparent hover:border-white px-2 py-1.5 rounded transition cursor-pointer leading-tight select-none group ${
+            pathname === '/seller-dashboard' ? 'border-white' : ''
+          }`}
+        >
+          <span className="text-[11px] text-slate-300">Merchant Tools</span>
+          <span className={`text-xs font-extrabold flex items-center gap-0.5 transition-colors ${
+            pathname === '/seller-dashboard' ? 'text-amber-500' : 'text-white group-hover:text-amber-500'
+          }`}>
+            Seller Copilot
           </span>
         </Link>
 

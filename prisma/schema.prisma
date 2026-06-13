@@ -54,12 +54,27 @@ model TradeIn {
   lng         Float
   h3_index    String   // Resolution 8 H3 index
   
-  status      String   @default("PENDING_INSPECTION") // PENDING_INSPECTION, INSPECTED_PASSED, MATCHED_P2P, ROUTED_TO_WAREHOUSE
+  status      String   @default("PENDING_INSPECTION") // PENDING_INSPECTION, INSPECTED_PASSED, MATCHED_P2P, ROUTED_TO_WAREHOUSE, LIVE_ON_MARKETPLACE
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  matches     P2PMatch[]
+  matches           P2PMatch[]
+  productHealthCard ProductHealthCard?
+}
+
+model ProductHealthCard {
+  id                   String   @id @default(cuid())
+  productName          String
+  conditionScore       Int
+  damageDetection      String
+  repairHistory        String
+  performanceHealth    String
+  aiRecommendation     String
+  authenticityVerified Boolean  @default(true)
+
+  tradeInId            String   @unique
+  tradeIn              TradeIn  @relation(fields: [tradeInId], references: [id])
 }
 
 model P2PMatch {
