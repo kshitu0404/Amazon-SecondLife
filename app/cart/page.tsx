@@ -88,7 +88,7 @@ export default function CartPage() {
                   <div>
                     <h3 
                       onClick={() => router.push(`/health-card?id=${item.product.id}`)}
-                      className="text-base font-bold text-sky-750 hover:text-sky-900 cursor-pointer line-clamp-2 leading-tight"
+                      className="text-base font-semibold text-slate-900 dark:text-white hover:text-sky-700 dark:hover:text-sky-400 cursor-pointer line-clamp-2 leading-tight"
                     >
                       {item.product.name}
                     </h3>
@@ -96,11 +96,11 @@ export default function CartPage() {
                       <Leaf className="w-3.5 h-3.5 fill-emerald-500/10" />
                       Saves {item.product.co2SavedKg} kg CO2
                     </p>
-                    <p className="text-xs text-slate-500 mt-1 capitalize">
-                      Condition: <span className="font-semibold text-slate-700">{item.product.condition.replace('_', ' ')}</span>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 capitalize">
+                      Condition: <span className="font-medium text-slate-700 dark:text-slate-300">{item.product.condition.replace('_', ' ')}</span>
                     </p>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Sold by: <span className="text-sky-750">{item.product.sellerName || 'Amazon Certified'}</span>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                      Sold by: <span className="text-slate-600 dark:text-slate-400">{item.product.sellerName || 'Amazon Certified'}</span>
                     </p>
                   </div>
                   <div className="text-right">

@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orders      Order[]
+  tradeIns    TradeIn[]
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  
+  // Geolocation & Indexing
+  lat         Float
+  lng         Float
+  h3_index    String   // Resolution 8 H3 index (approx 700m hexagon)
+  
+  status      String   @default("PENDING_FULFILLMENT") // PENDING_FULFILLMENT, MATCHED_P2P, SHIPPED_FROM_WAREHOUSE
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  matches     P2PMatch[]
+}
+
+model TradeIn {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  
+  // Seller condition info
+  condition   String
+  sellerNotes String?
+  
+  // Geolocation & Indexing
+  lat         Float
+  lng         Float
+  h3_index    String   // Resolution 8 H3 index
+  
+  status      String   @default("PENDING_INSPECTION") // PENDING_INSPECTION, INSPECTED_PASSED, MATCHED_P2P, ROUTED_TO_WAREHOUSE
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  matches     P2PMatch[]
+}
+
+model P2PMatch {
+  id          String   @id @default(cuid())
+  
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id])
+  
+  tradeInId   String   @unique
+  tradeIn     TradeIn  @relation(fields: [tradeInId], references: [id])
+  
+  status      String   @default("AWAITING_COURIER") // AWAITING_COURIER, COURIER_ACCEPTED, COMPLETED, CANCELLED
+  
+  // Mock 3PL Payload stub
+  trackingUrl String?
+  
+  createdAt   DateTime @default(now()) // Used to enforce the 2-hour holding window
+  updatedAt   DateTime @updatedAt
+}

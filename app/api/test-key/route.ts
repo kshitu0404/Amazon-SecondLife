@@ -1,33 +1,33 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
+import Groq from 'groq-sdk';
 
 export async function GET() {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json({
       status: 'missing',
-      message: 'GEMINI_API_KEY is not set in .env.local',
+      message: 'GROQ_API_KEY is not set in .env',
     });
   }
 
-  if (!apiKey.startsWith('AIza')) {
+  if (!apiKey.startsWith('gsk_')) {
     return NextResponse.json({
       status: 'wrong_format',
-      message: `Key starts with "${apiKey.slice(0, 6)}..." — Gemini API keys must start with "AIza". Get one from https://aistudio.google.com/app/apikey`,
+      message: `Key starts with "${apiKey.slice(0, 6)}..." — Groq API keys must start with "gsk_".`,
     });
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-lite',
-      contents: 'Say the word OK and nothing else.',
+    const groq = new Groq({ apiKey });
+    const response = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: 'Say the word OK and nothing else.' }],
     });
     return NextResponse.json({
       status: 'ok',
       message: 'API key is valid and working.',
-      model_response: response.text,
+      model_response: response.choices[0]?.message?.content,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

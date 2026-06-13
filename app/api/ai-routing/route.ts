@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
+import Groq from 'groq-sdk';
 
-const apiKey = process.env.GEMINI_API_KEY || '';
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
+const apiKey = process.env.GROQ_API_KEY || '';
+const groq = apiKey ? new Groq({ apiKey }) : null;
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { userCity, userPincode, warehouseCity, productId } = body;
 
-    if (!ai) {
+    if (!groq) {
       // Mock fallback if no API key is provided
       const isLocal = userCity.toLowerCase() === warehouseCity.toLowerCase();
       const days = isLocal ? 1 : 3;
@@ -39,15 +39,14 @@ export async function POST(req: NextRequest) {
       }
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-lite',
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      }
+    const response = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      response_format: { type: "json_object" },
+      temperature: 0.1
     });
 
-    const text = response.text;
+    const text = response.choices[0]?.message?.content;
     const data = JSON.parse(text || "{}");
 
     return NextResponse.json(data);
