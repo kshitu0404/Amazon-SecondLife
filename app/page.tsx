@@ -27,9 +27,9 @@ export default function Home() {
   const [activeSlide, setActiveSlide] = useState(0);
   const slides = [
     {
-      title: 'GIVE SECOND LIFE',
-      cursive: 'Save Together',
-      tagline: 'Give your returned, unused, and outgrown products a second life!',
+      title: 'Extracting Value Beyond',
+      cursive: 'The First Purchase',
+      tagline: 'AI-powered lifecycle intelligence that finds the best next destination for every returned or unused product.',
       buttonText: 'Start Trade-in',
       link: '/upload',
     },
