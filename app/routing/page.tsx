@@ -2,20 +2,110 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Truck, RotateCcw, Users, Wrench, Heart, Trash2, ShieldCheck, DollarSign, Leaf, Sparkles, RefreshCw, BarChart } from 'lucide-react';
-import { Product, RoutingType } from '@/types';
-import { getActiveProduct, formatPrice } from '@/lib/utils';
-import { mockProducts } from '@/data/mockProducts';
+import { Product, RoutingResult, RoutingType } from '@/types';
+import { getConditionColorClass, getConditionLabel, formatPrice } from '@/lib/utils';
+import { ProductJourney } from '@/lib/inspection';
 
 export default function RoutingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const runId = searchParams.get('runId');
+
+  const [journey, setJourney] = useState<ProductJourney | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
 
-  // Load the active product (from upload or fallback)
+  // Load the active product (from MongoDB via runId)
   useEffect(() => {
-    setProduct(getActiveProduct());
-  }, []);
+    if (!runId) {
+      router.push('/upload');
+      return;
+    }
+    
+    fetch(`/api/inspections/${runId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.journey) {
+          const journeyData = data.journey as ProductJourney;
+          setJourney(journeyData);
+          
+          const report = journeyData.inspectionReport;
+          const score = report.overall_condition_score;
+          const originalPrice = journeyData.category === 'Electronics' ? 599 : journeyData.category === 'Home & Kitchen' ? 149 : journeyData.category === 'Apparel' ? 89 : 29;
+
+          let routing: RoutingResult;
+
+          if (journeyData.routingResult) {
+            routing = journeyData.routingResult;
+          } else {
+            // Compute routing
+            let route: RoutingResult['route'] = 'relist';
+            let reasoning = 'High value retention and excellent condition justify immediate reselling.';
+            let costSavings = Math.round(originalPrice * 0.2);
+            
+            if (score < 60) {
+              route = 'donation';
+              reasoning = 'Refurbishment costs outweigh the potential retail margins. Direct donation provides a tax write-off and maximum community value.';
+              costSavings = Math.round(originalPrice * 0.15);
+            } else if (score < 75) {
+              route = 'refurbishment';
+              reasoning = 'Deep sanitization and replacement of minor wear parts increases recovery value significantly.';
+              costSavings = Math.round(originalPrice * 0.25);
+            } else if (journeyData.category === 'Apparel') {
+              route = 'peer_exchange';
+              reasoning = 'Apparel is highly suited for direct peer-to-peer exchanges to prevent landfill routing and foster community trade.';
+              costSavings = Math.round(originalPrice * 0.3);
+            }
+          
+            const resalePrice = Math.round(originalPrice * (score / 100) * 0.75);
+
+            routing = {
+              route,
+              reasoning,
+              expectedRecoveryValue: resalePrice,
+              costSavings,
+              confidenceLevel: 88 + Math.round(Math.random() * 11),
+            };
+
+            // Save computed routing to DB
+            fetch(`/api/inspections/${runId}/route`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ routingResult: routing })
+            });
+          }
+
+          const mappedProduct = {
+            id: journeyData.runId,
+            name: journeyData.productName,
+            category: journeyData.category,
+            conditionNotes: journeyData.conditionNotes,
+            image: journeyData.uploadedImages?.[0] || 'https://via.placeholder.com/600',
+            condition: 'like_new' as any,
+            originalPrice,
+            resalePrice: routing.expectedRecoveryValue,
+            co2SavedKg: 0,
+            wasteDivertedKg: 0,
+            packagingSavedCount: 0,
+            milesAvoided: 0,
+            healthCard: {} as any,
+            aiAnalysis: {} as any,
+            routing,
+            status: journeyData.lifecycleStatus,
+            sellerName: journeyData.ownerLabel || 'User',
+            sellerRating: 5.0
+          };
+          setProduct(mappedProduct as any);
+        } else {
+          router.push('/upload');
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch journey', err);
+        router.push('/upload');
+      });
+  }, [runId, router]);
 
   if (!product) {
     return (
@@ -92,27 +182,14 @@ export default function RoutingPage() {
             AI Smart Routing Dashboard
           </h1>
         </div>
-        
-        {/* Dropdown to switch items */}
+        {/* View Journey Link */}
         <div className="flex items-center gap-2 self-start md:self-auto">
-          <span className="text-xs text-slate-500 font-extrabold uppercase">Inspect Item:</span>
-          <select
-            value={product.id}
-            onChange={(e) => {
-              const selectedId = e.target.value;
-              const found = mockProducts.find((p) => p.id === selectedId);
-              if (found) {
-                setProduct(found);
-              }
-            }}
-            className="border border-slate-300 text-xs font-bold rounded-lg px-3 py-2 bg-white text-slate-700 outline-none cursor-pointer focus:border-amazon-orange"
+          <Link
+            href={`/journey/${runId}`}
+            className="border border-slate-300 text-xs font-bold rounded-lg px-3 py-2 bg-white text-slate-700 hover:bg-slate-50 flex items-center gap-2"
           >
-            {mockProducts.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name.length > 35 ? `${p.name.substring(0, 35)}...` : p.name}
-              </option>
-            ))}
-          </select>
+            <ShieldCheck className="w-4 h-4" /> View Full Journey
+          </Link>
         </div>
       </div>
 

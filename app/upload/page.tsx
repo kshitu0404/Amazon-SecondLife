@@ -35,6 +35,7 @@ export default function UploadPage() {
   const [inspectionError, setInspectionError] = useState<string | null>(null);
   const [setupMessage, setSetupMessage] = useState<string | null>(null);
   const [report, setReport] = useState<InspectionReport | null>(null);
+  const [runId, setRunId] = useState<string | null>(null);
 
   // Ref to scroll back to upload zone when more images are needed
   const uploadZoneRef = useRef<HTMLDivElement>(null);
@@ -60,6 +61,7 @@ export default function UploadPage() {
     });
     // Reset previous report when images change
     setReport(null);
+    setRunId(null);
     setInspectionError(null);
     setSetupMessage(null);
   }, []);
@@ -71,6 +73,7 @@ export default function UploadPage() {
       return prev.filter((img) => img.id !== id);
     });
     setReport(null);
+    setRunId(null);
   }, []);
 
   const handleAngleChange = useCallback((id: string, angle: AngleLabel) => {
@@ -87,6 +90,7 @@ export default function UploadPage() {
     setInspectionError(null);
     setSetupMessage(null);
     setReport(null);
+    setRunId(null);
 
     try {
       const formData = new FormData();
@@ -116,6 +120,9 @@ export default function UploadPage() {
       }
 
       setReport(data.report);
+      if (data.runId) {
+        setRunId(data.runId);
+      }
 
       // Auto-scroll to report
       setTimeout(() => {
@@ -395,6 +402,16 @@ export default function UploadPage() {
               report={report}
               onRequestMoreImages={handleRequestMoreImages}
             />
+            {runId && report.confidence_score >= 70 && (
+              <div className="mt-6 flex justify-end">
+                <a
+                  href={`/analysis?runId=${runId}`}
+                  className="bg-amazon-orange hover:bg-amazon-orange-hover text-black font-bold py-3 px-6 rounded-lg transition text-sm flex items-center gap-2 shadow-sm"
+                >
+                  Proceed to AI Scan Analysis <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              </div>
+            )}
           </div>
         )}
       </div>

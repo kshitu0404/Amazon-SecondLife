@@ -41,6 +41,7 @@ export default function Sidebar() {
     { name: 'Home Portal', href: '/', icon: Home },
     { name: 'Certified Marketplace', href: '/marketplace', icon: ShoppingBag },
     { name: 'Upload & Trade-In', href: '/upload', icon: Upload },
+    { name: 'History Dashboard', href: '/history', icon: FileText },
     { name: 'AI Scan Diagnostics', href: '/analysis', icon: Cpu },
     { name: 'Smart Routing Solver', href: '/routing', icon: Truck },
     { name: 'Product Passport', href: '/health-card', icon: FileText },

@@ -2,20 +2,81 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { ShieldCheck, Sparkles, ArrowRight, RefreshCw, AlertTriangle, Cpu, Tag, FileText } from 'lucide-react';
-import { Product } from '@/types';
-import { getActiveProduct, getConditionColorClass, getConditionLabel } from '@/lib/utils';
+import { Product, AIAnalysis } from '@/types';
+import { getConditionColorClass, getConditionLabel } from '@/lib/utils';
+import { ProductJourney } from '@/lib/inspection';
 
 export default function AnalysisPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const runId = searchParams.get('runId');
+
   const [product, setProduct] = useState<Product | null>(null);
   const [activeStep, setActiveStep] = useState(0);
 
-  // Load the active product (from upload or fallback)
+  // Load the active product (from MongoDB via runId)
   useEffect(() => {
-    setProduct(getActiveProduct());
-  }, []);
+    if (!runId) {
+      router.push('/upload');
+      return;
+    }
+    
+    fetch(`/api/inspections/${runId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.journey) {
+          const journey = data.journey as ProductJourney;
+          const report = journey.inspectionReport;
+          
+          // Determine condition from score
+          const score = report.overall_condition_score;
+          let condition: Product['condition'] = 'like_new';
+          if (score < 60) condition = 'acceptable';
+          else if (score < 80) condition = 'good';
+          else if (score < 90) condition = 'very_good';
+
+          // Reconstruct mock AI analysis from report
+          const aiAnalysis: AIAnalysis = {
+            conditionScore: score,
+            confidenceScore: report.confidence_score,
+            scratchDetection: report.defects.find(d => d.type.toLowerCase().includes('scratch'))?.description || 'No surface scratches detected.',
+            damageAssessment: report.defects.find(d => d.type.toLowerCase().includes('damage') || d.type.toLowerCase().includes('dent'))?.description || 'Pristine structural integrity.',
+            missingPartsAssessment: report.defects.find(d => d.type.toLowerCase().includes('missing'))?.description || 'All primary hardware accessories identified.',
+            overallRecommendation: report.reasoning
+          };
+
+          const mappedProduct = {
+            id: journey.runId,
+            name: journey.productName,
+            category: journey.category,
+            conditionNotes: journey.conditionNotes,
+            image: journey.uploadedImages?.[0] || 'https://via.placeholder.com/600',
+            condition,
+            originalPrice: 0,
+            resalePrice: 0,
+            co2SavedKg: 0,
+            wasteDivertedKg: 0,
+            packagingSavedCount: 0,
+            milesAvoided: 0,
+            healthCard: {} as any,
+            aiAnalysis,
+            routing: {} as any,
+            status: journey.lifecycleStatus,
+            sellerName: journey.ownerLabel || 'User',
+            sellerRating: 5.0
+          };
+          setProduct(mappedProduct as any);
+        } else {
+          router.push('/upload');
+        }
+      })
+      .catch(err => {
+        console.error('Failed to fetch journey', err);
+        router.push('/upload');
+      });
+  }, [runId, router]);
 
   // Simple animation steps on page load
   useEffect(() => {
@@ -255,7 +316,7 @@ export default function AnalysisPage() {
               </Link>
               
               <Link
-                href="/routing"
+                href={`/routing?runId=${runId}`}
                 className="flex items-center justify-center gap-1 bg-amazon-orange hover:bg-amazon-orange-hover text-black font-bold py-2.5 px-4.5 rounded-lg transition text-xs shadow w-full sm:w-auto"
               >
                 Go to Smart Routing <ArrowRight className="w-3.5 h-3.5" />

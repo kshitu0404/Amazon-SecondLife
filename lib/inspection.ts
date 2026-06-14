@@ -34,6 +34,42 @@ export interface SustainabilityImpact {
   notes: string;
 }
 
+export type LifecycleStatus = 
+  | 'UPLOADED'
+  | 'INSPECTED'
+  | 'ROUTED'
+  | 'LISTED'
+  | 'SOLD'
+  | 'DONATED'
+  | 'RECYCLED'
+  | 'ARCHIVED'
+  | 'MANUAL_REVIEW';
+
+export interface StatusEvent {
+  status: LifecycleStatus;
+  timestamp: string;
+  note?: string;
+  actor: string;
+}
+
+export interface ProductJourney {
+  _id?: string;
+  runId: string;
+  productName: string;
+  category: string;
+  conditionNotes: string;
+  uploadedImages: string[]; // base64 strings or URLs
+  inspectionReport: InspectionReport;
+  routingResult?: any;
+  lifecycleStatus: LifecycleStatus;
+  statusHistory: StatusEvent[];
+  createdAt: string;
+  updatedAt: string;
+  buyerOrRecipient?: string;
+  ownerLabel?: string;
+  finalOutcome?: string;
+}
+
 export type FinalRecommendation = 'relist' | 'refurbish' | 'donate' | 'recycle' | 'exchange';
 
 export interface InspectionReport {
@@ -54,6 +90,7 @@ export interface InspectionReport {
 export interface InspectionApiResponse {
   success: boolean;
   report?: InspectionReport;
+  runId?: string;
   error?: string;
   setup_message?: string;
 }
