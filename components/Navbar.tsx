@@ -77,10 +77,10 @@ export default function Navbar() {
         {/* Input Text Box */}
         <input
           type="text"
-          placeholder="Search Amazon SecondLife"
+          placeholder="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-grow px-3 text-sm bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none h-full"
+          className="flex-grow w-full min-w-0 px-3 text-sm bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none h-full"
         />
 
         {/* Yellow Search Action Button */}
@@ -88,12 +88,12 @@ export default function Navbar() {
           type="submit" 
           className="bg-[#febd69] hover:bg-[#f3a847] flex items-center justify-center px-6 transition cursor-pointer h-full shrink-0"
         >
-          <Search className="w-4.5 h-4.5 text-slate-900 stroke-[2.5]" />
+          <Search className="w-5 h-5 text-slate-900 stroke-[2.5]" />
         </button>
       </form>
 
       {/* Right Area: Action Anchors */}
-      <div className="flex items-center gap-2 sm:gap-4.5 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
         
         {/* Language selector (EN) */}
         <div 
@@ -113,6 +113,17 @@ export default function Navbar() {
           <span className="text-[11px] text-slate-300">Command Center</span>
           <span className="text-xs font-extrabold text-white flex items-center gap-0.5">
             Admin Portal
+          </span>
+        </Link>
+
+        {/* Driver App Link */}
+        <Link 
+          href="/driver"
+          className="hidden sm:flex flex-col text-left border border-transparent hover:border-white px-2 py-1.5 rounded transition cursor-pointer leading-tight select-none"
+        >
+          <span className="text-[11px] text-slate-300">Delivery Partner</span>
+          <span className="text-xs font-extrabold text-white flex items-center gap-0.5">
+            Driver App
           </span>
         </Link>
 

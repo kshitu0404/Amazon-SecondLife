@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { X, User, Home, Upload, Cpu, Truck, FileText, BarChart2, ShoppingBag, Percent, HelpCircle, LogOut } from 'lucide-react';
+import { X, User, Home, Upload, Cpu, Truck, FileText, BarChart2, ShoppingBag, Percent, HelpCircle, LogOut, Wallet, Leaf } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -40,12 +40,10 @@ export default function Sidebar() {
   const coreLinks = [
     { name: 'Home Portal', href: '/', icon: Home },
     { name: 'Certified Marketplace', href: '/marketplace', icon: ShoppingBag },
-    { name: 'Upload & Trade-In', href: '/upload', icon: Upload },
+    { name: 'Smart Return Wizard', href: '/return-wizard', icon: Upload },
     { name: 'History Dashboard', href: '/history', icon: FileText },
-    { name: 'AI Scan Diagnostics', href: '/analysis', icon: Cpu },
-    { name: 'Smart Routing Solver', href: '/routing', icon: Truck },
-    { name: 'Product Passport', href: '/health-card', icon: FileText },
-    { name: 'Eco Impact Ledger', href: '/impact', icon: BarChart2 },
+    { name: 'Eco Impact Ledger', href: '/impact', icon: Leaf },
+    { name: 'Circular Wallet', href: '/wallet', icon: Wallet },
   ];
 
   const categories = [
@@ -145,11 +143,11 @@ export default function Sidebar() {
             </h3>
             <div className="pt-2 gap-0.5 flex flex-col">
               <a
-                href="/upload"
+                href="/return-wizard"
                 className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-md text-xs font-bold text-slate-705 hover:bg-slate-50 hover:text-slate-900 transition"
               >
                 <Percent className="w-4.5 h-4.5 text-slate-400 shrink-0" />
-                <span>Sell on SecondLife</span>
+                <span>Return an Item</span>
               </a>
 
               <a

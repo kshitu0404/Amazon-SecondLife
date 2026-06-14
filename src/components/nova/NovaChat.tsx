@@ -8,11 +8,10 @@ import { X, Minus, Send, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 
 const defaultQuickActions = [
-  'Find a Product',
-  'Compare Listings',
-  'Trade-In Advice',
-  'Sustainability Impact',
-  'Explain Condition Grade'
+  'Explain return decisions',
+  'Show why item was flagged',
+  'Explain refund timelines',
+  'Track sustainability impact'
 ];
 
 export default function NovaChat() {
@@ -59,7 +58,7 @@ export default function NovaChat() {
         setQuickActions(defaultQuickActions.slice(0, 3));
       }
     } catch (err) {
-      appendChatMessage({ role: 'assistant', content: "I'm sorry, I'm having trouble connecting right now. Let's try again in a moment! 🐝" });
+      appendChatMessage({ role: 'assistant', content: "Nova ran into an issue while verifying your request. Trying alternatives... 🐝" });
     } finally {
       setIsTyping(false);
     }
@@ -73,7 +72,7 @@ export default function NovaChat() {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 50, scale: 0.95 }}
       transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-      className="fixed bottom-24 right-6 w-[350px] max-w-[calc(100vw-3rem)] max-h-[600px] h-[70vh] bg-white border border-slate-200 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden pointer-events-auto"
+      className="fixed bottom-6 right-24 sm:right-32 md:right-48 lg:right-[220px] w-[350px] max-w-[calc(100vw-6rem)] max-h-[600px] h-[70vh] bg-white border border-slate-200 rounded-2xl shadow-2xl flex flex-col z-50 overflow-hidden pointer-events-auto"
     >
       {/* Header */}
       <div className="bg-amber-50 border-b border-amber-100 p-3 flex items-center justify-between">
@@ -103,7 +102,7 @@ export default function NovaChat() {
               <Image src="/images/nova/happy.png" alt="Nova" fill className="object-contain" />
             </div>
             <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-tl-sm shadow-sm text-sm">
-              Hi! I'm Nova 🐝. I can help you find products, explain condition grades, estimate sustainability impact, recommend trade-in options, and answer questions about SecondLife.
+              Hi! I'm Nova 🐝. I'm your AI operations assistant. I can explain return decisions, show why an item was flagged, explain refund timelines, and track your sustainability impact.
             </div>
           </div>
         )}
@@ -130,10 +129,13 @@ export default function NovaChat() {
             <div className="relative w-6 h-6 rounded-full overflow-hidden shrink-0 mt-1">
               <Image src="/images/nova/scanning.png" alt="Nova Thinking" fill className="object-contain" />
             </div>
-            <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-tl-sm shadow-sm text-sm flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="bg-white border border-slate-200 text-slate-500 p-3 rounded-2xl rounded-tl-sm shadow-sm text-sm flex items-center gap-2 italic">
+              Nova is thinking
+              <span className="flex gap-0.5 mt-1">
+                <span className="w-1 h-1 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-1 h-1 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-1 h-1 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+              </span>
             </div>
           </div>
         )}

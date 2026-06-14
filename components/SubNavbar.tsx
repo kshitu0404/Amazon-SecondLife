@@ -16,11 +16,9 @@ export default function SubNavbar() {
 
   const navLinks = [
     { label: 'Circular Marketplace', href: '/marketplace' },
-    { label: 'Trade-In Portal', href: '/upload' },
-    { label: 'AI Diagnostics', href: '/analysis' },
-    { label: 'Smart Routing', href: '/routing' },
-    { label: 'Product Passports', href: '/health-card' },
+    { label: 'Smart Return', href: '/return-wizard' },
     { label: 'Sustainability Ledger', href: '/impact' },
+    { label: 'Circular Wallet', href: '/wallet' },
   ];
 
   return (
@@ -64,10 +62,10 @@ export default function SubNavbar() {
           Amazon Basics
         </Link>
         <Link
-          href="/upload"
+          href="/return-wizard"
           className="px-2.5 py-1 rounded-sm border border-transparent hover:border-white transition"
         >
-          Sell
+          Return Item
         </Link>
         <Link
           href="/marketplace"

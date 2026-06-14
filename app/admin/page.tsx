@@ -59,7 +59,25 @@ export default async function AdminPortal() {
           </Link>
         </header>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-4 gap-6">
+          
+          {/* Risk & Fraud Card */}
+          <div className="lg:col-span-4 bg-rose-50 border border-rose-200 rounded-xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+            <div>
+              <h2 className="text-xl font-black text-rose-900 flex items-center gap-2">
+                <ShieldAlert className="w-6 h-6 text-rose-600" /> Risk & Fraud Operations
+              </h2>
+              <p className="text-rose-700 text-sm mt-1">Access the advanced 3-layer AI fraud detection system and XAI analytics.</p>
+            </div>
+            <Link 
+              href="/admin/fraud" 
+              className="inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-sm transition shrink-0"
+            >
+              Open Fraud Dashboard <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="lg:col-span-4 grid lg:grid-cols-3 gap-6">
           
           {/* Active Orders Pool */}
           <section className="bg-white rounded-xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
@@ -165,6 +183,7 @@ export default async function AdminPortal() {
             </div>
           </section>
 
+          </div>
         </div>
       </div>
     </div>

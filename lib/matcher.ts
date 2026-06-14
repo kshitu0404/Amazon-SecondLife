@@ -13,7 +13,7 @@ export interface MatchResult {
  * Core Logic Module: Dynamic Radius Matcher
  * 
  * Performs an asynchronous dynamic, expanding radius search across real-world coordinate pairs.
- * It starts at ring size k=0 (same hexagon), and incrementally expands up to k=3 (~3km radius).
+ * It starts at ring size k=0 (same hexagon), and incrementally expands up to k=50 (~50km radius).
  * Looks for an active, unfulfilled order matching the specific product_id.
  */
 export async function findHyperlocalBuyerMatch(
@@ -23,7 +23,7 @@ export async function findHyperlocalBuyerMatch(
   senderLat: number,
   senderLng: number
 ): Promise<MatchResult> {
-  const MAX_K_RING = 3;
+  const MAX_K_RING = 50;
 
   try {
     // Search incrementally across rings to prioritize the closest possible buyer

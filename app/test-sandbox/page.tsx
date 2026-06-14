@@ -355,7 +355,7 @@ export default function TestSandbox() {
                             <h3 className="font-bold text-lg tracking-wide">No Local Match Found. Standard Routing.</h3>
                           </div>
                           <div className="p-6 text-center space-y-4">
-                            <p className="text-slate-600 text-sm">We expanded the search radius up to 3km, but no active orders for this product were found.</p>
+                            <p className="text-slate-600 text-sm">We expanded the search radius up to 50km, but no active orders for this product were found.</p>
                             <div className="bg-slate-100 border border-slate-200 border-dashed rounded-lg p-6 max-w-sm mx-auto">
                               <PackageSearch className="w-10 h-10 text-slate-400 mx-auto mb-2" />
                               <p className="font-mono font-bold text-slate-800 text-lg">RETURN TO WAREHOUSE</p>

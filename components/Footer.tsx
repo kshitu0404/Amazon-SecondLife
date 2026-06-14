@@ -38,10 +38,10 @@ export default function Footer() {
         <div>
           <h3 className="text-white font-bold mb-3">Amazon SecondLife Hub</h3>
           <ul className="space-y-2 text-xs">
-            <li><Link href="/upload" className="hover:underline">Trade-In Portal</Link></li>
+            <li><Link href="/return-wizard" className="hover:underline">Smart Return Wizard</Link></li>
             <li><Link href="/marketplace" className="hover:underline">Circular Marketplace</Link></li>
-            <li><Link href="/routing" className="hover:underline">Smart Routing System</Link></li>
             <li><Link href="/impact" className="hover:underline">Your Sustainability Impact</Link></li>
+            <li><Link href="/wallet" className="hover:underline">Circular Wallet</Link></li>
             <li><a href="#" className="hover:underline">Certified Refurbishment Partners</a></li>
           </ul>
         </div>
@@ -83,7 +83,7 @@ export default function Footer() {
             <Globe className="w-3.5 h-3.5" /> English
           </button>
           <button className="border border-slate-600 hover:border-slate-400 rounded px-3 py-1.5 flex items-center gap-1.5 bg-transparent">
-            <DollarSign className="w-3.5 h-3.5" /> USD - U.S. Dollar
+            <DollarSign className="w-3.5 h-3.5" /> INR - Indian Rupee
           </button>
           <button className="border border-slate-600 hover:border-slate-400 rounded px-3 py-1.5 flex items-center gap-1.5 bg-transparent">
             <span className="text-amber-500 font-bold">♻</span> United States Hub
