@@ -7,10 +7,15 @@ import { mockProducts } from '@/data/mockProducts';
 import { formatPrice, getConditionColorClass, getConditionLabel } from '@/lib/utils';
 import { DeliveryBadge } from '@/src/components/DeliveryBadge';
 import { useCart } from '@/src/context/CartContext';
+import { useNovaLanding, useNovaExitIntent } from '@/src/components/nova/useNovaPage';
 
 export default function Home() {
   const router = useRouter();
   const { addToCart } = useCart();
+  
+  useNovaLanding();
+  useNovaExitIntent();
+
   const featured = mockProducts.slice(0, 5);
   // Stable review counts — computed once, never changes between server and client
   const reviewCounts = useMemo(
@@ -59,88 +64,146 @@ export default function Home() {
   return (
     <div className="w-full flex flex-col pb-12">
       
-      {/* 1. Yellow Cursive Carousel Banner */}
-      <div className="relative w-full bg-[#f3d03b] bg-gradient-to-r from-[#fce056] to-[#f3d03b] min-h-[300px] sm:min-h-[360px] flex items-center overflow-hidden border-b border-[#ddb31c]/50">
-        
-        {/* Left Slider Button */}
-        <button
-          onClick={() => setActiveSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1))}
-          className="absolute left-4 z-20 w-11 h-11 bg-black/10 hover:bg-black/30 text-white rounded-full flex items-center justify-center transition cursor-pointer select-none"
-        >
-          <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
-        </button>
-
-        {/* Carousel Content */}
-        <div className="max-w-7xl mx-auto w-full px-6 sm:px-12 flex flex-col md:flex-row justify-between items-center gap-6 py-8 relative z-10">
+      {/* 1. Hero Dashboard Banner */}
+      <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+        <div className="radial-glow relative w-full max-w-[1600px] mx-auto bg-[#f3d03b]/90 bg-gradient-to-r from-[#fce056]/90 to-[#f3d03b]/90 min-h-[400px] flex items-center overflow-hidden rounded-[24px] shadow-sm border border-[#ddb31c]/30">
           
-          {/* Tagline text and cursive heading */}
-          <div className="space-y-4 max-w-xl text-left">
-            <div className="space-y-1">
-              <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900 leading-none">
-                {slides[activeSlide].title}
-              </h2>
-              <span className="font-cursive text-sky-850 text-5xl sm:text-6xl font-bold block ml-1 select-none leading-normal">
-                {slides[activeSlide].cursive}
-              </span>
+          {/* Honeycomb Texture Overlay */}
+          <div className="absolute inset-0 pointer-events-none honeycomb-bg !bg-transparent opacity-20 z-0"></div>
+          
+          {/* Left Slider Button */}
+          <button
+            onClick={() => setActiveSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1))}
+            className="absolute left-4 z-20 w-11 h-11 bg-black/10 hover:bg-black/30 text-white rounded-full flex items-center justify-center transition cursor-pointer select-none"
+          >
+            <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+          </button>
+
+          {/* Carousel Content */}
+          <div className="mx-auto w-full px-12 lg:px-16 flex flex-col lg:flex-row justify-between items-center gap-6 py-6 relative z-10 min-h-[400px]">
+            
+            {/* Left: Text & Buttons */}
+            <div className="space-y-4 text-left w-full lg:w-[40%]">
+              <div className="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm border border-white/50 px-3.5 py-1.5 rounded-full shadow-xs text-[11px] uppercase tracking-wide font-extrabold text-emerald-800">
+                <Leaf className="w-3.5 h-3.5 text-emerald-600" /> WELCOME TO AMAZON SECONDLIFE
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-black tracking-tight text-slate-900 leading-none">
+                  Extracting Value Beyond<br />The First Purchase
+                </h2>
+              </div>
+
+              <p className="text-sm sm:text-base text-slate-800 leading-relaxed font-semibold max-w-[420px]">
+                AI-powered lifecycle intelligence that finds the best next destination for every returned, unused, or outgrown product.
+              </p>
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={() => router.push('/upload')}
+                  className="bg-[#0f172a] hover:bg-[#1e293b] text-white text-xs sm:text-sm font-bold py-2.5 px-5 rounded-lg shadow-lg transition transform hover:scale-105 cursor-pointer flex items-center gap-2"
+                >
+                  Start Trade-in <span className="font-normal text-lg leading-none">→</span>
+                </button>
+                <button
+                  onClick={() => router.push('/marketplace')}
+                  className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 text-xs sm:text-sm font-bold py-2.5 px-5 rounded-lg shadow-lg transition transform hover:scale-105 cursor-pointer flex items-center gap-2"
+                >
+                  Browse Marketplace <span className="font-normal text-lg leading-none">→</span>
+                </button>
+              </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-bold max-w-md">
-              "{slides[activeSlide].tagline}"
-            </p>
+            {/* Center: 3D Graphic */}
+            <div className="hidden lg:flex w-full lg:w-[30%] justify-center relative">
+               
+               {/* Floating Leaves Elements */}
+               <div className="absolute -top-2 right-6 animate-[bounce_3s_infinite] delay-75 z-20">
+                  <Leaf className="w-4 h-4 text-green-600 transform rotate-45 opacity-60 drop-shadow-md" fill="currentColor" />
+               </div>
+               <div className="absolute top-1/4 -left-4 animate-[bounce_4s_infinite] delay-300 z-20">
+                  <Leaf className="w-6 h-6 text-emerald-600 transform -rotate-12 opacity-50 drop-shadow-sm" fill="currentColor" />
+               </div>
+               <div className="absolute bottom-8 right-2 animate-[pulse_3s_infinite] delay-500 z-20">
+                  <Leaf className="w-4 h-4 text-green-500 transform rotate-90 opacity-70 drop-shadow-sm" fill="currentColor" />
+               </div>
 
-            <button
-              onClick={() => router.push(slides[activeSlide].link)}
-              className="bg-amazon-blue hover:bg-amazon-secondary text-white text-xs font-extrabold py-3 px-7 rounded-md shadow transition transform active:scale-95 cursor-pointer mt-2"
-            >
-              {slides[activeSlide].buttonText}
-            </button>
+               {/* Transparent 3D Product Illustration */}
+               <img 
+                 src="/images/hero_circular_3d_transparent.png" 
+                 alt="Circular Economy Graphic" 
+                 className="w-full max-w-[340px] object-contain drop-shadow-[0_25px_35px_rgba(0,0,0,0.25)] mix-blend-darken relative z-10 transition-transform hover:scale-105 duration-500" 
+               />
+            </div>
+
+            {/* Right Panels (Features) */}
+            <div className="flex flex-col gap-2 shrink-0 w-full lg:w-[30%] relative z-10">
+              {/* Panel 1 */}
+              <div className="bg-[#FFFDF5] rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 transition hover:shadow-md">
+                <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                </div>
+                <div className="leading-tight">
+                  <h4 className="text-xs font-extrabold text-slate-900">AI Diagnostics</h4>
+                  <p className="text-[10px] text-slate-600 font-medium mt-0.5 leading-snug">Advanced AI scans & evaluates product condition instantly.</p>
+                </div>
+              </div>
+
+              {/* Panel 2 */}
+              <div className="bg-[#FFFDF5] rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 transition hover:shadow-md">
+                <div className="w-9 h-9 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
+                  <span className="font-extrabold text-base">₹</span>
+                </div>
+                <div className="leading-tight">
+                  <h4 className="text-xs font-extrabold text-slate-900">Smart Trade-In Valuation</h4>
+                  <p className="text-[10px] text-slate-600 font-medium mt-0.5 leading-snug">Get the best value with real-time market & condition analysis.</p>
+                </div>
+              </div>
+
+              {/* Panel 3 */}
+              <div className="bg-[#FFFDF5] rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 transition hover:shadow-md">
+                <div className="w-9 h-9 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 border border-sky-100">
+                  <ShoppingCart className="w-4 h-4" />
+                </div>
+                <div className="leading-tight">
+                  <h4 className="text-xs font-extrabold text-slate-900">Circular Marketplace</h4>
+                  <p className="text-[10px] text-slate-600 font-medium mt-0.5 leading-snug">Buy, sell & rediscover quality pre-owned products.</p>
+                </div>
+              </div>
+
+              {/* Panel 4 */}
+              <div className="bg-[#FFFDF5] rounded-xl p-3 shadow-sm border border-slate-100 flex items-center gap-3 transition hover:shadow-md">
+                <div className="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0 border border-green-100">
+                  <Leaf className="w-4 h-4" />
+                </div>
+                <div className="leading-tight">
+                  <h4 className="text-xs font-extrabold text-slate-900">Sustainability Rewards</h4>
+                  <p className="text-[10px] text-slate-600 font-medium mt-0.5 leading-snug">Earn eco-credits for every sustainable action.</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Right Panels (Hives and credits visual details) */}
-          <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto relative max-w-xs md:max-w-none pr-4 md:pr-12">
-            {/* Panel 1 */}
-            <div className="bg-white/95 rounded-lg p-3.5 shadow border border-yellow-400/30 flex items-start gap-3 w-64 text-left">
-              <div className="w-9 h-9 rounded-md bg-emerald-50 text-[#10b981] flex items-center justify-center border border-emerald-100 shrink-0">
-                <Leaf className="w-5 h-5 fill-emerald-500/10" />
-              </div>
-              <div className="leading-tight">
-                <h4 className="text-xs font-extrabold text-slate-900">Eco-Ledger Credits</h4>
-                <p className="text-[10px] text-slate-500 mt-0.5 leading-normal">Track carbon stamps for every second-life trade-in.</p>
-              </div>
-            </div>
+          {/* Right Slider Button */}
+          <button
+            onClick={() => setActiveSlide(prev => (prev === slides.length - 1 ? 0 : prev + 1))}
+            className="absolute right-4 z-20 w-11 h-11 bg-black/10 hover:bg-black/30 text-white rounded-full flex items-center justify-center transition cursor-pointer select-none"
+          >
+            <ChevronRight className="w-6 h-6 stroke-[2.5]" />
+          </button>
 
-            {/* Panel 2 */}
-            <div className="bg-white/95 rounded-lg p-3.5 shadow border border-yellow-400/30 flex items-start gap-3 w-64 text-left">
-              <div className="w-9 h-9 rounded-md bg-sky-50 text-sky-600 flex items-center justify-center border border-sky-100 shrink-0">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <div className="leading-tight">
-                <h4 className="text-xs font-extrabold text-slate-900">Instant AI Voucher</h4>
-                <p className="text-[10px] text-slate-500 mt-0.5 leading-normal">Blemish-scanning nets instant checkout gift credits.</p>
-              </div>
-            </div>
+          {/* Slide Indicator Dots */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-20">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveSlide(i)}
+                className={`w-2 h-2 rounded-full cursor-pointer transition ${
+                  activeSlide === i ? 'bg-slate-900 scale-125' : 'bg-slate-900/30'
+                }`}
+              />
+            ))}
           </div>
-        </div>
-
-        {/* Right Slider Button */}
-        <button
-          onClick={() => setActiveSlide(prev => (prev === slides.length - 1 ? 0 : prev + 1))}
-          className="absolute right-4 z-20 w-11 h-11 bg-black/10 hover:bg-black/30 text-white rounded-full flex items-center justify-center transition cursor-pointer select-none"
-        >
-          <ChevronRight className="w-6 h-6 stroke-[2.5]" />
-        </button>
-
-        {/* Slide Indicator Dots */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-20">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveSlide(i)}
-              className={`w-2 h-2 rounded-full cursor-pointer transition ${
-                activeSlide === i ? 'bg-slate-900' : 'bg-slate-900/30'
-              }`}
-            />
-          ))}
         </div>
       </div>
 
@@ -177,7 +240,7 @@ export default function Home() {
         </div>
 
         {/* Hot Deals Grid */}
-        <div className="space-y-4">
+        <div className="space-y-4 radial-glow relative">
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
             <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-1.5">
               Circular Deals <span className="text-rose-500">🔥</span>

@@ -7,6 +7,7 @@ import { Calendar, Clock, ShieldCheck, Battery, RefreshCw, BarChart2, Star, Doll
 import { Product } from '@/types';
 import { mockProducts } from '@/data/mockProducts';
 import { getActiveProduct, formatPrice, getConditionColorClass, getConditionLabel } from '@/lib/utils';
+import { useNova } from '@/src/components/nova/NovaContext';
 
 export default function HealthCardPage() {
   return (
@@ -40,6 +41,15 @@ function HealthCardContent() {
     }
     setProduct(getActiveProduct());
   }, [searchParams]);
+
+  // Inject this product into Nova's global Chat Context
+  const { setCurrentProductContext } = useNova();
+  useEffect(() => {
+    if (product) {
+      setCurrentProductContext(product);
+    }
+    return () => setCurrentProductContext(null); // Cleanup on unmount
+  }, [product, setCurrentProductContext]);
 
   if (!product) {
     return (

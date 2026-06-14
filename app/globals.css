@@ -25,6 +25,30 @@
   --color-slate-650: #475569;
   --color-slate-750: #1e293b;
   --color-slate-850: #0f172a;
+
+  /* Honey Theme Global Overrides */
+  --color-panel: #F7EFC8; /* Warm honey-cream for panels */
+  --color-slate-200: #E8D89A;
+  --shadow-sm: 0 4px 20px rgba(0,0,0,0.05);
+  --shadow: 0 4px 20px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+@layer base {
+  /* Ensure inputs stand out slightly from the honey panels */
+  input, select, textarea {
+    background-color: #FFF4C7 !important;
+  }
+}
+
+@layer utilities {
+  /* Map bg-white to the honey panel color globally, but leave text-white pure white */
+  .bg-white {
+    background-color: var(--color-panel) !important;
+  }
+  .text-white {
+    color: #ffffff !important;
+  }
 }
 
 
@@ -40,9 +64,33 @@ html {
 }
 
 body {
-  background: #f4f6f8;
+  background: #FFFBEA;
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
+}
+
+/* Premium Site-Wide Honeycomb Pattern */
+.honeycomb-bg {
+  background-color: #FFFBEA;
+  background-image: url("data:image/svg+xml,%3Csvg width='56' height='98' viewBox='0 0 56 98' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='hexGrad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23F2D85A' /%3E%3Cstop offset='100%25' stop-color='%23EBCF45' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cg id='Page-1' fill='none' fill-rule='evenodd'%3E%3Cg id='hexagons' fill='url(%23hexGrad)' fill-opacity='0.15' fill-rule='nonzero'%3E%3Cpath d='M27.98 18.5l26 15v30l-26 15-25.98-15v-30l25.98-15zM6 35.8v26.4l21.98 12.68 22-12.7V35.8l-22-12.68L6 35.8zM0 30l25.96-15V0h-4v12.7L0 25.38v4.62zm0 37l25.96 15v16h-4v-13.7L0 71.62v-4.62zM30 0v15l25.98 15H56v-4.62L34 12.68V0h-4zm0 98v-16l25.98-15H56v4.62L34 85.32V98h-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+/* Soft Radial Glow Effects for Depth */
+.radial-glow {
+  position: relative;
+}
+.radial-glow::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 150%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(253, 230, 138, 0.45) 0%, rgba(255, 251, 234, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Utility: fade-in animation for the inspection report */

@@ -7,6 +7,8 @@ import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import { LocationProvider } from "@/src/context/LocationContext";
 import { CartProvider } from "@/src/context/CartContext";
+import { NovaProvider } from "@/src/components/nova/NovaContext";
+import NovaOverlay from "@/src/components/nova/NovaOverlay";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -39,18 +41,21 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${geistMono.variable} ${caveat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#eaeded] text-slate-900 font-sans">
-        <CartProvider>
-          <LocationProvider>
-            <Navbar />
-            <SubNavbar />
-            <Sidebar />
-            <main className="flex-grow flex flex-col w-full">
-              {children}
-            </main>
-            <Footer />
-          </LocationProvider>
-        </CartProvider>
+      <body className="min-h-full flex flex-col bg-[#FFFBEA] text-slate-900 font-sans honeycomb-bg">
+        <NovaProvider>
+          <CartProvider>
+            <LocationProvider>
+              <Navbar />
+              <SubNavbar />
+              <Sidebar />
+              <main className="flex-grow flex flex-col w-full">
+                {children}
+              </main>
+              <Footer />
+            </LocationProvider>
+          </CartProvider>
+          <NovaOverlay />
+        </NovaProvider>
       </body>
     </html>
   );

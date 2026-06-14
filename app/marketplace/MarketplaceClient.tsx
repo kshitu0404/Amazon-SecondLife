@@ -9,6 +9,7 @@ import { mockProducts } from '@/data/mockProducts';
 import { formatPrice, getConditionColorClass, getConditionLabel } from '@/lib/utils';
 import { DeliveryBadge } from '@/src/components/DeliveryBadge';
 import { useCart } from '@/src/context/CartContext';
+import { useNovaMarketplace } from '@/src/components/nova/useNovaPage';
 
 export default function MarketplaceClient({ initialItems = [] }: { initialItems: any[] }) {
   return (
@@ -35,6 +36,8 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [selectedPassport, setSelectedPassport] = useState<any>(null);
+
+  const { novaSearchBuyers, novaMatchFound } = useNovaMarketplace();
   
   // Filter States
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -70,9 +73,9 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
     }));
     
     // Fallback to mock products if DB is empty for demo purposes
-    let list = [...liveMapped];
+    let list: any[] = [...liveMapped];
     if (list.length === 0) {
-      list = [...mockProducts];
+      list = mockProducts.map(p => ({ ...p, sellerName: p.sellerName ?? 'Amazon Certified' }));
     }
     setProducts(list);
   }, [initialItems]);
@@ -120,11 +123,26 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
       result.sort((a, b) => b.resalePrice - a.resalePrice);
     } else if (sortBy === 'co2') {
       result.sort((a, b) => b.co2SavedKg - a.co2SavedKg);
+    } else if (sortBy === 'lowest_co2') {
+      result.sort((a, b) => b.co2SavedKg - a.co2SavedKg);
     } else if (sortBy === 'grade') {
       result.sort((a, b) => b.healthCard.cosmeticScore - a.healthCard.cosmeticScore);
     }
 
     setFilteredProducts(result);
+
+    // Nova AI Integration
+    if (result.length > 0) {
+      novaSearchBuyers();
+      const timer = setTimeout(() => {
+        novaMatchFound({
+          count: result.length * 3 + Math.floor(Math.random() * 5),
+          radius: 5,
+          productType: selectedCategory === 'All' ? 'items' : selectedCategory.toLowerCase()
+        });
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
   }, [products, selectedCategory, selectedCondition, maxPrice, sortBy, searchQuery]);
 
   const clearFilters = () => {

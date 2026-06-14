@@ -200,7 +200,12 @@ export async function POST(req: NextRequest) {
     try {
       const client = await clientPromise;
       const db = client.db('secondlife');
-      await db.collection('product_journeys').insertOne(journey);
+      
+      // Remove _id if it's a string so MongoDB can auto-generate an ObjectId
+      const docToInsert = { ...journey };
+      delete docToInsert._id;
+      
+      await db.collection('product_journeys').insertOne(docToInsert as any);
     } catch (dbError) {
       console.error('Failed to save journey to DB:', dbError);
       // Even if DB fails, return success for demo purposes but maybe we shouldn't.

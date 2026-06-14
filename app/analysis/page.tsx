@@ -7,6 +7,8 @@ import { ShieldCheck, Sparkles, ArrowRight, RefreshCw, AlertTriangle, Cpu, Tag, 
 import { Product, AIAnalysis } from '@/types';
 import { getConditionColorClass, getConditionLabel } from '@/lib/utils';
 import { ProductJourney } from '@/lib/inspection';
+import { useNovaProductScan } from '@/src/components/nova/useNovaPage';
+import NovaScanOverlay from '@/src/components/nova/NovaScanOverlay';
 
 export default function AnalysisPage() {
   const router = useRouter();
@@ -16,10 +18,45 @@ export default function AnalysisPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [activeStep, setActiveStep] = useState(0);
 
+  const { novaStartScan, novaScanResult } = useNovaProductScan();
+  const [scanning, setScanning] = useState(true);
+
   // Load the active product (from MongoDB via runId)
   useEffect(() => {
+    const iv = novaStartScan();
     if (!runId) {
-      router.push('/upload');
+      const mockScore = 85;
+      setProduct({
+        id: 'demo-123',
+        name: 'Echo Dot (4th Gen) - Demo',
+        category: 'Electronics',
+        conditionNotes: 'Small scratch on top',
+        image: '/images/products/placeholder.jpg',
+        condition: 'very_good',
+        originalPrice: 49,
+        resalePrice: 35,
+        co2SavedKg: 12,
+        wasteDivertedKg: 0.5,
+        packagingSavedCount: 1,
+        milesAvoided: 50,
+        healthCard: {} as any,
+        aiAnalysis: {
+          conditionScore: mockScore,
+          confidenceScore: 92,
+          scratchDetection: 'Minor surface scratch detected on the upper housing.',
+          damageAssessment: 'Pristine structural integrity. No dents found.',
+          missingPartsAssessment: 'All primary hardware accessories identified.',
+          overallRecommendation: 'Product is fully functional with minor cosmetic wear. Recommended for quick resale.'
+        },
+        routing: {} as any,
+        status: 'RECEIVED',
+        sellerName: 'Demo User',
+        sellerRating: 5.0
+      } as any);
+      
+      clearInterval(iv);
+      setScanning(false);
+      novaScanResult({ score: mockScore });
       return;
     }
     
@@ -68,12 +105,17 @@ export default function AnalysisPage() {
             sellerRating: 5.0
           };
           setProduct(mappedProduct as any);
+          clearInterval(iv);
+          setScanning(false);
+          novaScanResult({ score });
         } else {
           router.push('/upload');
         }
       })
       .catch(err => {
         console.error('Failed to fetch journey', err);
+        clearInterval(iv);
+        setScanning(false);
         router.push('/upload');
       });
   }, [runId, router]);
@@ -152,11 +194,13 @@ export default function AnalysisPage() {
             </div>
             
             <div className="relative h-72 w-full bg-white flex items-center justify-center border-b border-slate-200">
-              <img
-                src={image}
-                alt={name}
-                className="w-full h-full object-cover group-hover:scale-102 transition duration-500"
-              />
+              <NovaScanOverlay isScanning={scanning}>
+                <img
+                  src={image}
+                  alt={name}
+                  className="w-full h-full object-cover group-hover:scale-102 transition duration-500"
+                />
+              </NovaScanOverlay>
             </div>
             
             <div className="p-4 bg-slate-100/70 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600 font-bold">

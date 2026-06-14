@@ -7,6 +7,7 @@ import { Truck, RotateCcw, Users, Wrench, Heart, Trash2, ShieldCheck, DollarSign
 import { Product, RoutingResult, RoutingType } from '@/types';
 import { getConditionColorClass, getConditionLabel, formatPrice } from '@/lib/utils';
 import { ProductJourney } from '@/lib/inspection';
+import { useNovaDecision } from '@/src/components/nova/useNovaPage';
 
 export default function RoutingPage() {
   const router = useRouter();
@@ -16,10 +17,43 @@ export default function RoutingPage() {
   const [journey, setJourney] = useState<ProductJourney | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
 
+  const { novaStartDecision, novaDecide } = useNovaDecision();
+
   // Load the active product (from MongoDB via runId)
   useEffect(() => {
+    novaStartDecision();
     if (!runId) {
-      router.push('/upload');
+      setProduct({
+        id: 'demo-123',
+        name: 'Echo Dot (4th Gen) - Demo',
+        category: 'Electronics',
+        conditionNotes: 'Small scratch on top',
+        image: '/images/products/placeholder.jpg',
+        condition: 'very_good',
+        originalPrice: 49,
+        resalePrice: 35,
+        co2SavedKg: 12,
+        wasteDivertedKg: 0.5,
+        packagingSavedCount: 1,
+        milesAvoided: 50,
+        healthCard: {} as any,
+        aiAnalysis: {} as any,
+        routing: {
+          route: 'relist',
+          reasoning: 'High value retention and excellent condition justify immediate reselling.',
+          expectedRecoveryValue: 35,
+          costSavings: 10,
+          confidenceLevel: 95
+        },
+        status: 'RECEIVED',
+        sellerName: 'Demo User',
+        sellerRating: 5.0
+      } as any);
+      novaDecide({
+        recommendation: 'relist',
+        saving: 10,
+        carbonReduction: 12
+      });
       return;
     }
     
@@ -97,6 +131,11 @@ export default function RoutingPage() {
             sellerRating: 5.0
           };
           setProduct(mappedProduct as any);
+          novaDecide({
+            recommendation: routing.route,
+            saving: routing.costSavings,
+            carbonReduction: 15
+          });
         } else {
           router.push('/upload');
         }

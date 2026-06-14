@@ -5,6 +5,7 @@ import { useCart } from '@/src/context/CartContext';
 import { formatPrice } from '@/lib/utils';
 import { Trash2, ShieldCheck, Leaf } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useNovaRewards } from '@/src/components/nova/useNovaPage';
 
 export default function CartPage() {
   const { cartItems, cartTotal, cartCount, updateQuantity, removeFromCart, clearCart } = useCart();
@@ -12,13 +13,25 @@ export default function CartPage() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
+  const { novaReward } = useNovaRewards();
+
   const handleCheckout = () => {
     setIsCheckingOut(true);
+    
+    const totalCarbon = cartItems.reduce((acc, item) => acc + (item.product.co2SavedKg * item.quantity), 0);
+    const credits = Math.round(cartTotal * 0.05);
+
     // Simulate checkout process
     setTimeout(() => {
       clearCart();
       setIsCheckingOut(false);
       setCheckoutSuccess(true);
+      
+      novaReward({
+        credits,
+        action: 'local-redistribution',
+        saving: Math.round(totalCarbon * 2) 
+      });
     }, 1500);
   };
 
@@ -67,7 +80,7 @@ export default function CartPage() {
       <div className="flex-grow w-full bg-white rounded-lg shadow-sm border border-slate-200 p-4 md:p-6 text-left">
         <h1 className="text-2xl font-bold text-slate-900 mb-1 border-b border-slate-200 pb-4 flex justify-between items-end">
           Shopping Cart
-          <span className="text-sm font-normal text-slate-500">Price</span>
+          <span className="text-sm font-bold text-slate-800">Price</span>
         </h1>
 
         <div className="flex flex-col gap-6 pt-4">
@@ -88,7 +101,7 @@ export default function CartPage() {
                   <div>
                     <h3 
                       onClick={() => router.push(`/health-card?id=${item.product.id}`)}
-                      className="text-base font-semibold text-slate-900 dark:text-white hover:text-sky-700 dark:hover:text-sky-400 cursor-pointer line-clamp-2 leading-tight"
+                      className="text-base font-semibold text-slate-900 hover:text-sky-700 cursor-pointer line-clamp-2 leading-tight"
                     >
                       {item.product.name}
                     </h3>
@@ -96,11 +109,11 @@ export default function CartPage() {
                       <Leaf className="w-3.5 h-3.5 fill-emerald-500/10" />
                       Saves {item.product.co2SavedKg} kg CO2
                     </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 capitalize">
-                      Condition: <span className="font-medium text-slate-700 dark:text-slate-300">{item.product.condition.replace('_', ' ')}</span>
+                    <p className="text-sm text-slate-800 mt-1 capitalize font-medium">
+                      Condition: <span className="font-bold text-slate-900">{item.product.condition.replace('_', ' ')}</span>
                     </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-                      Sold by: <span className="text-slate-600 dark:text-slate-400">{item.product.sellerName || 'Amazon Certified'}</span>
+                    <p className="text-sm text-slate-800 mt-0.5 font-medium">
+                      Sold by: <span className="font-bold text-slate-900">{item.product.sellerName || 'Amazon Certified'}</span>
                     </p>
                   </div>
                   <div className="text-right">
@@ -134,7 +147,7 @@ export default function CartPage() {
 
                   <button
                     onClick={() => removeFromCart(item.product.id)}
-                    className="text-xs font-semibold text-sky-750 hover:text-sky-900 hover:underline flex items-center gap-1"
+                    className="text-sm font-bold text-slate-800 hover:text-slate-900 hover:underline flex items-center gap-1.5 cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" /> Delete
                   </button>
@@ -145,7 +158,7 @@ export default function CartPage() {
         </div>
         
         <div className="flex justify-end pt-4">
-          <p className="text-lg font-normal">
+          <p className="text-lg font-semibold text-slate-800">
             Subtotal ({cartCount} item{cartCount !== 1 && 's'}): <span className="font-bold">{formatPrice(cartTotal)}</span>
           </p>
         </div>
@@ -153,7 +166,7 @@ export default function CartPage() {
 
       {/* Right side: Checkout Card */}
       <div className="w-full lg:w-72 shrink-0 bg-white rounded-lg shadow-sm border border-slate-200 p-4 md:p-5 flex flex-col gap-4 text-left">
-        <p className="text-lg font-normal">
+        <p className="text-lg font-semibold text-slate-800">
           Subtotal ({cartCount} item{cartCount !== 1 && 's'}): <br/>
           <span className="font-bold text-slate-900">{formatPrice(cartTotal)}</span>
         </p>

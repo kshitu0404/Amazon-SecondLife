@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { UploadCloud, CheckCircle, Package, DollarSign, Activity, AlertCircle, ArrowRight, Trash2, PenTool, Wrench, Circle, CheckSquare, Flame } from "lucide-react";
+import { useNovaSeller } from "@/src/components/nova/useNovaPage";
 
 export default function SellerCopilotDashboard() {
   const [images, setImages] = useState<string[]>([]);
@@ -11,6 +12,20 @@ export default function SellerCopilotDashboard() {
   const [successMsg, setSuccessMsg] = useState("");
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { novaSellerInsight, novaPriceRecommendation } = useNovaSeller();
+
+  useEffect(() => {
+    // Proactive AI insight on dashboard load
+    const timer = setTimeout(() => {
+      novaSellerInsight({
+        issue: 'I detected high return rates in your recent electronics shipments.',
+        action: 'Switch to reinforced bubble packaging to prevent transit damage.',
+        revenue: 42000,
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
