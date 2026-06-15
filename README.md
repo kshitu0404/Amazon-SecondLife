@@ -10,13 +10,9 @@ Instead of sending returned products through expensive warehouse networks and ul
 
 # 🌐 Live Demo
 
-🔗 **Live Website:** [ADD LIVE LINK]
-
-🔗 **Presentation Deck:** [ADD PPT LINK]
+🔗 **Live Website:** [ https://amazon-second-life-two.vercel.app/ ]
 
 🎥 **Demo Video:** [ADD VIDEO LINK]
-
-📄 **Project Report:** [ADD REPORT LINK]
 
 ---
 
@@ -24,13 +20,14 @@ Instead of sending returned products through expensive warehouse networks and ul
 
 ## Landing Page
 
-![Landing Page](ADD_SCREENSHOT_HERE)
+<img width="1902" height="863" alt="image" src="https://github.com/user-attachments/assets/cf3c310e-749d-4922-95f4-5cc418eadb88" />
+
 
 ---
 
 ## Circular Marketplace
+<img width="1896" height="870" alt="image" src="https://github.com/user-attachments/assets/9347f7ba-41aa-423f-b006-ff2fadd664ee" />
 
-![Marketplace](ADD_SCREENSHOT_HERE)
 
 ---
 
