@@ -87,7 +87,12 @@ function MarketplaceContent({
   const [loadingPredict, setLoadingPredict] = useState(false);
   const [sizeAdvice, setSizeAdvice] = useState<any>(null);
   const [loadingSize, setLoadingSize] = useState(false);
-  const [pageMountTime] = useState(Date.now());
+  // pageMountTime is set client-side only to avoid SSR/client mismatch
+  // (Date.now() on the server differs from Date.now() on the client)
+  const pageMountTimeRef = React.useRef<number>(0);
+  useEffect(() => {
+    pageMountTimeRef.current = Date.now();
+  }, []);
 
   const { novaSearchBuyers, novaMatchFound } = useNovaMarketplace();
 
@@ -174,7 +179,7 @@ function MarketplaceContent({
     setLoadingSize(true);
     setSizeAdvice(null);
 
-    const timeSpentSec = Math.round((Date.now() - pageMountTime) / 1000);
+    const timeSpentSec = Math.round((Date.now() - (pageMountTimeRef.current || Date.now())) / 1000);
     const mockBehavior = { timeOnPage: Math.min(300, timeSpentSec || 25) };
 
     try {
@@ -240,6 +245,7 @@ function MarketplaceContent({
             type="text" 
             placeholder="Search circular catalogue (Press Enter)..." 
             defaultValue={searchQuery}
+            suppressHydrationWarning
             onKeyDown={(e) => {
               if (e.key === 'Enter') updateFilter('search', e.currentTarget.value);
             }}
@@ -255,6 +261,7 @@ function MarketplaceContent({
           <select
             value={sortBy}
             onChange={(e) => updateFilter('sortBy', e.target.value)}
+            suppressHydrationWarning
             className="border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 cursor-pointer text-slate-700 outline-none focus:border-amazon-orange font-bold"
           >
             <option value="featured">Featured Hub</option>
@@ -382,6 +389,7 @@ function MarketplaceContent({
               max="1000"
               step="10"
               value={maxPrice}
+              suppressHydrationWarning
               onChange={(e) => updateFilter('maxPrice', e.target.value)}
               className="w-full accent-amazon-orange cursor-pointer h-1.5 bg-slate-200 rounded"
             />
