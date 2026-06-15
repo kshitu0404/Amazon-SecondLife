@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
-import clientPromise from '@/lib/db';
-import type { InspectionApiResponse, ProductJourney, StatusEvent } from '@/lib/inspection';
+import { uploadImageToS3, buildInspectionImageKey } from '@/lib/aws/s3';
+import { saveJourney } from '@/lib/aws/dynamo';
+import { logger } from '@/lib/aws/cloudwatch';
+import type { InspectionReport, InspectionApiResponse, ProductJourney, StatusEvent } from '@/lib/inspection';
 
-// Initialize the official Groq client with the token from .env
 const apiKey = process.env.GROQ_API_KEY || '';
 const groq = apiKey ? new Groq({ apiKey }) : null;
 
-// The strictly targeted prompt for Llama-4-scout
 const INSPECTION_PROMPT = `You are an expert product condition inspector for Amazon SecondLife, a circular commerce platform.
 You will receive multiple images of a product taken from different angles, along with the product name, category, and any seller-provided condition notes.
 
@@ -28,14 +28,15 @@ You MUST return a valid JSON object matching this exact schema:
 Return ONLY the JSON object. Do not wrap in markdown or add explanations outside the JSON structure.`;
 
 export async function POST(req: NextRequest) {
+  const runId = `run_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
   try {
     const formData = await req.formData();
 
-    const productName = formData.get('productName') as string | null;
-    const category = formData.get('category') as string | null;
+    const productName    = formData.get('productName')    as string | null;
+    const category       = formData.get('category')       as string | null;
     const conditionNotes = formData.get('conditionNotes') as string | null;
 
-    // Validate required form fields
     if (!productName?.trim() || !category?.trim()) {
       return NextResponse.json<InspectionApiResponse>(
         { success: false, error: 'Product name and category are required.' },
@@ -43,30 +44,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Collect all uploaded image files
-    const imageFiles: File[] = [];
+    // Collect uploaded images
+    const imageFiles: File[]    = [];
     const imageAngles: string[] = [];
 
     for (const [key, value] of formData.entries()) {
       if (key.startsWith('image_') && value instanceof File) {
         imageFiles.push(value);
-        const idx = parseInt(key.replace('image_', ''), 10);
-        const angleKey = `angle_${idx}`;
-        const angle = formData.get(angleKey) as string | null;
+        const idx   = parseInt(key.replace('image_', ''), 10);
+        const angle = formData.get(`angle_${idx}`) as string | null;
         imageAngles.push(angle || `View ${idx + 1}`);
       }
     }
 
-    // --------------------------------------------------------------------------------
-    // DEFENSIVE CHECK: Prevent Llama/Groq Endpoint Overload
-    // --------------------------------------------------------------------------------
     if (imageFiles.length > 5) {
       return NextResponse.json<InspectionApiResponse>(
-        { success: false, error: 'Maximum 5 images are allowed for Llama-4-scout processing to prevent endpoint overload.' },
+        { success: false, error: 'Maximum 5 images are allowed.' },
         { status: 400 }
       );
     }
-
     if (imageFiles.length < 1) {
       return NextResponse.json<InspectionApiResponse>(
         { success: false, error: 'At least 1 image is required for inspection.' },
@@ -74,122 +70,122 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate file types
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     for (const file of imageFiles) {
       if (!allowedTypes.includes(file.type)) {
         return NextResponse.json<InspectionApiResponse>(
-          { success: false, error: `Unsupported file type: ${file.type}. Please upload JPG, PNG, or WebP images.` },
+          { success: false, error: `Unsupported file type: ${file.type}. Use JPG, PNG, or WebP.` },
           { status: 400 }
         );
       }
     }
 
-    // Check SDK initialization
     if (!groq) {
       return NextResponse.json<InspectionApiResponse>({
         success: false,
-        setup_message: 'Groq API key is not configured. Please add GROQ_API_KEY to your .env file.',
+        setup_message: 'Groq API key is not configured. Add GROQ_API_KEY to your .env.local file.',
         error: 'GROQ_API_KEY environment variable is missing.',
       }, { status: 503 });
     }
 
-    // --------------------------------------------------------------------------------
-    // CONSTRUCT MULTIMODAL MESSAGE PAYLOAD FOR GROQ
-    // --------------------------------------------------------------------------------
+    // ── Upload images to S3 (falls back to base64 locally) ─────────────────
+    const imageUrls: string[] = [];
     const contentParts: any[] = [];
-    
-    // Add context string
-    const angleContext = imageAngles.map((angle, idx) => `Image ${idx + 1}: ${angle}`).join(', ');
-    const contextualPrompt = `${INSPECTION_PROMPT}\n\nProduct Context:\n- Name: ${productName}\n- Category: ${category}\n- Notes: ${conditionNotes || 'None'}\n- Angles: ${angleContext}`;
 
-    contentParts.push({ type: "text", text: contextualPrompt });
-
-    const uploadedImages: string[] = [];
-
-    // Map the File array directly into Groq base64 data URIs
     await Promise.all(
-      imageFiles.map(async (file) => {
-        const bytes = await file.arrayBuffer();
-        const base64 = Buffer.from(bytes).toString('base64');
-        const dataUrl = `data:${file.type};base64,${base64}`;
-        uploadedImages.push(dataUrl);
+      imageFiles.map(async (file, idx) => {
+        const bytes  = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const ext    = file.type.split('/')[1] ?? 'jpg';
+
+        // Upload to S3 (or get base64 locally)
+        const s3Key  = buildInspectionImageKey(runId, idx, imageAngles[idx], ext);
+        const url    = await uploadImageToS3(buffer, file.type, s3Key);
+        imageUrls[idx] = url;
+
+        // Groq still needs base64 inline data for vision inference
+        const base64 = buffer.toString('base64');
         contentParts.push({
-          type: "image_url",
-          image_url: { url: dataUrl }
+          type: 'image_url',
+          image_url: { url: `data:${file.type};base64,${base64}` },
         });
       })
     );
 
-    // --------------------------------------------------------------------------------
-    // EXECUTE FAST VISION FRAMEWORK (meta-llama/llama-4-scout-17b-16e-instruct)
-    // --------------------------------------------------------------------------------
+    await logger.info('inspection-api', {
+      runId,
+      productName,
+      category,
+      imageCount: imageFiles.length,
+      s3Uploaded: imageUrls.length,
+    });
+
+    // ── Build the Groq prompt ────────────────────────────────────────────────
+    const angleContext = imageAngles.map((a, i) => `Image ${i + 1}: ${a}`).join(', ');
+    const contextualPrompt = `${INSPECTION_PROMPT}\n\nProduct Context:\n- Name: ${productName}\n- Category: ${category}\n- Notes: ${conditionNotes || 'None'}\n- Angles: ${angleContext}`;
+
+    contentParts.unshift({ type: 'text', text: contextualPrompt });
+
+    // ── Call Groq vision ─────────────────────────────────────────────────────
     const response = await groq.chat.completions.create({
       model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-      messages: [
-        {
-          role: 'user',
-          content: contentParts,
-        },
-      ],
-      // Enforce clean structured JSON return mapping to our DB transaction schemas
-      response_format: { type: "json_object" },
-      temperature: 0.1, // Near deterministic
+      messages: [{ role: 'user', content: contentParts }],
+      response_format: { type: 'json_object' },
+      temperature: 0.1,
     });
 
     const rawText = response.choices[0]?.message?.content?.trim() || '';
 
-    // Safely parse the strict JSON returned by the model
-    let report: any;
+    let report: InspectionReport;
     try {
       const groqReport = JSON.parse(rawText);
-      
-      // Map the simplified Llama 4 response to the legacy UI schema
+
       report = {
-        product_name: productName || 'Inspected Product',
+        product_name: productName,
         overall_condition_score: Math.round((groqReport.condition_score || 0) * 100),
-        confidence_score: 95, // Llama 4 Scout is highly confident
-        summary: groqReport.is_approved 
-          ? "Item has passed Llama-4 structural integrity inspection." 
-          : "Item failed inspection due to detected flaws.",
+        confidence_score: 95,
+        summary: groqReport.is_approved
+          ? 'Item has passed Llama-4 structural integrity inspection.'
+          : 'Item failed inspection due to detected flaws.',
         defects: (groqReport.detected_flaws || []).map((flaw: string) => ({
-          type: "Detected Flaw",
-          severity: "medium",
+          type: 'Detected Flaw',
+          severity: 'medium' as const,
           description: flaw,
-          likely_location: "General"
+          likely_location: 'General',
         })),
-        angle_analysis: [], // Gracefully default empty arrays to prevent frontend crashes
+        angle_analysis: [],
         missing_images_needed: [],
         final_recommendation: groqReport.is_approved ? 'relist' : 'recycle',
-        reasoning: "Groq Llama-4 rapid inference determined this status.",
-        next_actions: ["Proceed with logistics routing."],
-        resale_impact: { estimated_value_change: "Standard", notes: "Llama-4 estimate" },
-        sustainability_impact: { estimated_co2_saved: "15 kg", estimated_waste_diverted: "2 kg", notes: "Groq Fast Vision" }
+        reasoning: 'Groq Llama-4 rapid inference determined this status.',
+        next_actions: ['Proceed with logistics routing.'],
+        resale_impact: { estimated_value_change: 'Standard', notes: 'Llama-4 estimate' },
+        sustainability_impact: {
+          estimated_co2_saved: '15 kg',
+          estimated_waste_diverted: '2 kg',
+          notes: 'Groq Fast Vision',
+        },
       };
-      
     } catch {
-      console.error('Failed to parse Groq Llama-4 JSON:', rawText);
+      await logger.error('inspection-api', { runId, error: 'Failed to parse Groq JSON', rawText });
       return NextResponse.json<InspectionApiResponse>(
         { success: false, error: 'AI returned an unparseable response.' },
         { status: 500 }
       );
     }
 
-    // Save to MongoDB
-    const runId = `run_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    // ── Persist journey to DynamoDB (falls back to in-memory locally) ────────
     const now = new Date().toISOString();
-    
     const statusHistory: StatusEvent[] = [
-      { status: 'UPLOADED', timestamp: now, note: 'Images uploaded for inspection', actor: 'System' },
-      { status: 'INSPECTED', timestamp: now, note: 'AI inspection completed', actor: 'Gemini Vision' }
+      { status: 'UPLOADED',  timestamp: now, note: 'Images uploaded via S3',   actor: 'System' },
+      { status: 'INSPECTED', timestamp: now, note: 'AI inspection completed',   actor: 'Groq Llama-4' },
     ];
 
     const journey: ProductJourney = {
       runId,
-      productName: productName || 'Inspected Product',
-      category: category || 'Electronics',
+      productName,
+      category,
       conditionNotes: conditionNotes || '',
-      uploadedImages,
+      uploadedImages: imageUrls,   // S3 URLs (or base64 locally)
       inspectionReport: report,
       lifecycleStatus: 'INSPECTED',
       statusHistory,
@@ -198,26 +194,16 @@ export async function POST(req: NextRequest) {
     };
 
     try {
-      const client = await clientPromise;
-      const db = client.db('secondlife');
-      
-      // Remove _id if it's a string so MongoDB can auto-generate an ObjectId
-      const docToInsert = { ...journey };
-      delete docToInsert._id;
-      
-      await db.collection('product_journeys').insertOne(docToInsert as any);
-    } catch (dbError) {
-      console.error('Failed to save journey to DB:', dbError);
-      // Even if DB fails, return success for demo purposes but maybe we shouldn't.
-      // We will proceed for robustness.
+      await saveJourney(journey);
+    } catch (dbErr) {
+      await logger.warn('inspection-api', { runId, warning: 'Failed to save journey', error: String(dbErr) });
     }
 
-    // The core transaction logic and matcher DB layers downstream continue identically
     return NextResponse.json<InspectionApiResponse>({ success: true, report, runId });
-    
+
   } catch (error) {
-    console.error('Inspection API error:', error);
     const message = error instanceof Error ? error.message : 'Unknown error occurred.';
+    await logger.error('inspection-api', { runId, error: message });
     return NextResponse.json<InspectionApiResponse>(
       { success: false, error: `Inspection failed: ${message}` },
       { status: 500 }

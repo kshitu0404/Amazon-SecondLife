@@ -1,74 +1,89 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
 
-const apiKey = process.env.GROQ_API_KEY || '';
-const groq = apiKey ? new Groq({ apiKey }) : null;
+/**
+ * AI Routing — delivery estimate + CO2 offset.
+ *
+ * Uses deterministic logic instead of an LLM call to avoid burning Groq
+ * tokens on every product card render.  Output contract is identical to
+ * the previous Groq-powered version so the frontend requires no changes.
+ */
+
+// Rough distance tiers between major Indian cities (km, symmetric)
+const CITY_DISTANCES: Record<string, Record<string, number>> = {
+  delhi:   { mumbai: 1415, bangalore: 2150, hyderabad: 1575, chennai: 2175, kolkata: 1450, pune: 1410, delhi: 0 },
+  mumbai:  { delhi: 1415, bangalore: 980, hyderabad: 710, chennai: 1330, kolkata: 1980, pune: 150, mumbai: 0 },
+  bangalore: { delhi: 2150, mumbai: 980, hyderabad: 570, chennai: 350, kolkata: 1870, pune: 830, bangalore: 0 },
+  hyderabad: { delhi: 1575, mumbai: 710, bangalore: 570, chennai: 625, kolkata: 1495, pune: 560, hyderabad: 0 },
+  chennai: { delhi: 2175, mumbai: 1330, bangalore: 350, hyderabad: 625, kolkata: 1660, pune: 1180, chennai: 0 },
+  kolkata: { delhi: 1450, mumbai: 1980, bangalore: 1870, hyderabad: 1495, chennai: 1660, pune: 1930, kolkata: 0 },
+  pune:    { delhi: 1410, mumbai: 150, bangalore: 830, hyderabad: 560, chennai: 1180, kolkata: 1930, pune: 0 },
+};
+
+function normCity(city: string): string {
+  return city.toLowerCase().trim().replace(/\s+/g, '');
+}
+
+function estimateDistance(from: string, to: string): number {
+  const f = normCity(from);
+  const t = normCity(to);
+  if (f === t) return 0;
+  return CITY_DISTANCES[f]?.[t] ?? CITY_DISTANCES[t]?.[f] ?? 800; // default 800km
+}
+
+function formatDeliveryDate(daysFromNow: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + daysFromNow);
+  return d.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' });
+}
 
 export async function POST(req: NextRequest) {
-  let userCity = '';
-  let warehouseCity = '';
   try {
     const body = await req.json();
-    userCity = body.userCity || '';
-    warehouseCity = body.warehouseCity || '';
-    const { userPincode, productId } = body;
+    const userCity: string      = body.userCity      || 'Unknown';
+    const warehouseCity: string = body.warehouseCity || 'Delhi';
+    const userPincode: string   = body.userPincode   || '';
 
-    if (!groq) {
-      // Mock fallback if no API key is provided
-      const isLocal = userCity.toLowerCase() === warehouseCity.toLowerCase();
-      const days = isLocal ? 1 : 3;
-      const deliveryDate = new Date();
-      deliveryDate.setDate(deliveryDate.getDate() + days);
-      return NextResponse.json({
-        days,
-        dateString: deliveryDate.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' }),
-        isLocal,
-        co2Offset: 5.2,
-        routingDiagnostic: "Standard fallback routing applied (API Key missing)."
-      });
-    }
+    const distanceKm = estimateDistance(warehouseCity, userCity);
+    const isLocal    = distanceKm < 50;
 
-    const prompt = `
-      You are an AI logistics engine for Amazon SecondLife.
-      Calculate the delivery routing and estimate from warehouse city: "${warehouseCity}" to destination city: "${userCity}" (Pincode: ${userPincode}).
-      Also consider the carbon footprint reduction for this second-hand product delivery.
-      
-      Return ONLY a JSON object with the following schema:
-      {
-        "days": number, // estimated delivery days (1-7)
-        "dateString": string, // formatted delivery date (e.g., "Monday, June 15")
-        "isLocal": boolean, // true if warehouseCity and userCity are nearby/same
-        "co2Offset": number, // estimated kg of CO2 saved by optimized routing and buying second-hand (e.g., between 2.0 and 15.0)
-        "routingDiagnostic": string // A brief AI diagnostic message (e.g. "Optimized via nearest green hub")
-      }
-    `;
+    // Delivery days: same city 1d, <300km 2d, <800km 3d, else 4–5d
+    let days: number;
+    if (distanceKm === 0 || isLocal) days = 1;
+    else if (distanceKm < 300)       days = 2;
+    else if (distanceKm < 800)       days = 3;
+    else if (distanceKm < 1500)      days = 4;
+    else                              days = 5;
 
-    const response = await groq.chat.completions.create({
-      model: 'llama-3.1-8b-instant',
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" },
-      temperature: 0.1
-    });
+    // CO2 offset: second-hand products save ~70% vs new manufacturing;
+    // add a small routing bonus for shorter distances
+    const routingBonus = Math.max(0, (1500 - distanceKm) / 1500) * 3;
+    const co2Offset    = Math.round((4.5 + routingBonus) * 10) / 10;
 
-    const text = response.choices[0]?.message?.content;
-    const data = JSON.parse(text || "{}");
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error generating AI routing (applying fallback):', error);
-    
-    // Graceful fallback with 200 status to prevent frontend crashes/errors
-    const isLocal = userCity?.toLowerCase() === warehouseCity?.toLowerCase();
-    const days = isLocal ? 1 : 3;
-    const deliveryDate = new Date();
-    deliveryDate.setDate(deliveryDate.getDate() + days);
+    const diagnostics = [
+      'Optimized via nearest circular hub',
+      'Green route selected — minimal carbon footprint',
+      'SecondLife logistics network engaged',
+      'Eco-priority lane assigned',
+    ];
+    const routingDiagnostic = diagnostics[days % diagnostics.length];
 
     return NextResponse.json({
       days,
-      dateString: deliveryDate.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' }),
+      dateString:        formatDeliveryDate(days),
       isLocal,
-      co2Offset: 5.2,
-      routingDiagnostic: "Standard fallback routing applied due to API error."
+      co2Offset,
+      routingDiagnostic,
+    });
+  } catch (error) {
+    console.error('AI routing error:', error);
+    const deliveryDate = new Date();
+    deliveryDate.setDate(deliveryDate.getDate() + 3);
+    return NextResponse.json({
+      days:              3,
+      dateString:        deliveryDate.toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' }),
+      isLocal:           false,
+      co2Offset:         5.2,
+      routingDiagnostic: 'Standard routing applied.',
     });
   }
 }
