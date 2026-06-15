@@ -1,4 +1,4 @@
-# Amazon SecondLife - Circular Commerce Operating System
+# Amazon SecondLife - Circular E-Commerce Operating System
 
 > **A production-grade AI-powered circular economy platform** — transforming e-commerce returns from an $800B cost center into a sustainable, value-generating ecosystem. Built with Multi-Agent Nova AI, Computer Vision Condition Grading, Hyperlocal P2P Matching, and Dynamic Digital Twins.
 
@@ -12,8 +12,8 @@
 1. [Problem Statement & Relevance](#problem-statement--relevance)
 2. [Architecture & Tech Stack](#architecture--tech-stack)
 3. [Core Technical Innovations & Logic](#core-technical-innovations--logic)
-4. [AI Modules (Nova Ecosystem)](#ai-modules-nova-ecosystem)
-5. [Deep Dive: Feature Overview](#deep-dive-feature-overview)
+4. [The Nova AI Engine (Multi-Agent Brain)](#the-nova-ai-engine-multi-agent-brain)
+5. [Deep Dive: Core Features](#deep-dive-core-features)
 6. [User Journeys](#user-journeys)
 7. [Quick Start & Deployment](#quick-start--deployment)
 8. [Future Vision & Scaling](#future-vision--scaling)
@@ -23,37 +23,29 @@
 ## Problem Statement & Relevance
 
 ### The $800 Billion Returns Crisis
-Every year, more than 30% of products purchased online are returned, creating over $800 billion in global return costs. Many of these products remain fully functional, yet they are discarded, liquidated at heavy losses, or sent through expensive reverse-logistics networks before finding a second owner.
+Every year, millions of returned products are treated like waste, even when they still have real value. More than 30% of online purchases are returned, costing retailers billions and generating massive carbon emissions from reverse logistics. Perfectly usable products are discarded or shipped thousands of miles simply because there is no intelligent system to route them efficiently. 
 
-At the same time, customers hesitate to purchase refurbished or second-hand products due to concerns around quality, authenticity, and product condition. This creates a massive gap between reusable inventory and potential buyers.
-
-Without intervention, return volumes are projected to surpass $1.2 trillion annually by 2030, making sustainable resale and circular commerce increasingly critical.
+At the same time, customers hesitate to buy refurbished products due to uncertainty. Buying a used product feels like a mystery, creating a massive gap between reusable inventory and willing buyers.
 
 ### The SecondLife Solution
-Amazon SecondLife directly addresses the AI-Powered Returns & Sustainable Resale challenge by creating an intelligent ecosystem that gives every product a meaningful second life.
-
-Most existing resale platforms only become involved after a product has already been returned, refurbished, or listed for resale. Amazon SecondLife introduces a first-of-its-kind AI-orchestrated circular commerce ecosystem that actively manages a product's entire lifecycle. Instead of treating returns as waste, the platform uses AI to determine whether an item should be:
-* Resold via P2P
-* Refurbished
-* Exchanged
-* Donated to NGOs
-* Recycled
+Amazon SecondLife directly addresses this by building an operating system for circular commerce. Instead of letting products end up in costly reverse logistics or landfills, our platform gives every item a smarter second life. It actively decides whether a product should be resold locally, refurbished, donated, recycled, or matched directly to a new buyer—preventing waste before it even happens.
 
 ---
 
 ## Architecture & Tech Stack
 
-Amazon SecondLife is designed for 1000x scaling and enterprise-grade reliability.
+Amazon SecondLife is designed with a production-style backbone, not just a demo UI.
 
 | Layer | Technology |
 |-------|-----------|
 | **Frontend** | Next.js 16 (App Router), React 19, Tailwind CSS, Framer Motion, Recharts |
-| **Backend** | Next.js Server Actions, Node.js, REST API |
+| **Backend Core** | Next.js Server Actions, Node.js, REST API |
 | **Database** | PostgreSQL (via Vercel Postgres), Prisma ORM |
-| **AI / ML** | Amazon Bedrock (Multi-agent reasoning), Amazon Rekognition (Computer Vision), Groq (LLM Fallback) |
-| **Auth** | NextAuth / JWT, Role-based access control (Customer, Seller, Enterprise, Admin) |
+| **AI Reasoning** | Amazon Bedrock (Multi-agent architecture), Groq (Resilient fallback layer) |
+| **Computer Vision** | Amazon Rekognition (Condition scanning and fraud prevention) |
+| **High-Throughput** | Amazon DynamoDB (Journey and timeline data) |
+| **Cloud & Storage** | AWS S3 (Product and passport assets), Vercel, AWS CloudWatch (Observability) |
 | **Mapping** | H3 Geospatial Clustering, Leaflet |
-| **Cloud** | AWS S3 (Storage), Vercel (Deployment), AWS Lambda + EventBridge |
 
 ---
 
@@ -63,56 +55,68 @@ Amazon SecondLife is built on rigorous algorithmic foundations that drive real-w
 
 ### 1. Dynamic Radius Matcher (H3 Geospatial Clustering)
 Instead of returning items to a centralized warehouse, the `Matcher Engine` performs an asynchronous dynamic, expanding radius search using Uber's H3 Hexagonal Hierarchical Spatial Index.
-* **Logic:** The engine starts at ring size `k=0` (the exact same hexagon cell as the returner). It executes a database transaction to locate an unfulfilled, matching order. If no buyer is found, the loop expands out to `k=50` (approx. 50km radius).
-* **Benefit:** Reduces shipping distances by up to 90%, slashing carbon emissions and eliminating the need to physically warehouse returned items.
+* **Logic:** The engine starts at ring size `k=0` (the exact same hexagon cell as the returner). It executes an isolated database transaction to locate an unfulfilled, matching order. If no buyer is found, the loop expands outward incrementally to `k=50` (approx. 50km radius).
+* **Impact:** Radically reduces shipping distances by up to 90%, slashing carbon emissions and allowing the product to re-enter use much faster.
 
 ### 2. Autonomous Resale Agent (ARA)
-The ARA engine autonomously scans user inventories to predict the best time to sell or donate idle items.
-* **Logic:** The agent filters for "liquid" categories (electronics, apparel, home). It computes the current depreciation rate using the Digital Twin engine. If the `monthly_decay_pct >= 2%`, the ARA flags the item as "sell_now" to prevent value loss. If the current value dips below $15, the engine flags it for "donate" to maximize tax benefits and NGO impact.
-* **Execution:** A background cron sweeps inventory, scores probabilities, and pushes proactive notifications to the Circular Concierge bar.
+The ARA engine autonomously scans user inventories to predict the exact optimal time to sell or donate idle items.
+* **Logic:** The agent filters for "liquid" categories (electronics, apparel). It computes the depreciation rate using the Digital Twin engine. If the `monthly_decay_pct >= 2%`, the ARA flags the item as "sell_now" to prevent value loss. If the current value dips below $15, it flags it for "donate" to maximize NGO impact.
+* **Impact:** Prevents products from sitting idle in closets until they become electronic waste by pushing proactive push notifications to the user.
 
 ### 3. Digital Product Twins & Pricing Depreciation
-The pricing engine simulates the financial depreciation of every item across 3, 6, and 12-month horizons.
+The pricing engine simulates the financial depreciation of every item across 3, 6, and 12-month horizons to optimize secondary market liquidity.
 * **Logic:** The engine scales Base MSRP by the AI Condition Grade (A+ retains 90%, B retains 60%, etc.). It then calculates geometric depreciation: `Depreciation = Math.pow(1 - (monthlyDepreciation / 100), ageMonths)`.
-* **Output:** This generates an EOL (End-of-Life) alert if an item is forecast to drop below $10 in 3 months, urging the seller to recirculate the item before it becomes electronic waste.
+* **Impact:** Generates highly accurate fair-market pricing and triggers predictive End-of-Life (EOL) alerts before an item drops to zero value.
+
+### 4. Computer Vision Condition Scan
+Returns are no longer processed blindly. The platform utilizes advanced computer vision pipelines to analyze the physical state of every item the moment a return is initiated.
+* **Logic:** Uploaded images are passed through Amazon Rekognition to detect structural integrity, cosmetic damage, and packaging condition. The engine cross-references this visual data against historical product baselines to assign a standardized ISO-style condition grade.
+* **Impact:** Eliminates manual warehouse inspections, speeds up refunds, and generates certified trust signals for the next buyer instantly.
+
+### 5. Smart Routing Engine
+The platform dynamically calculates the optimal physical destination for every single item to ensure it creates the most value with the least waste.
+* **Logic:** The engine runs a multi-variate evaluation matrix weighing product condition, local demand velocity, logistics transportation costs, fraud risk, and environmental value. 
+* **Impact:** Bypasses central warehouses entirely. High-condition items are routed P2P; damaged items are routed to refurbishment partners; low-value items are routed to verified NGOs.
 
 ---
 
-## AI Modules (Nova Ecosystem)
+## The Nova AI Engine (Multi-Agent Brain)
 
-Amazon SecondLife is powered by the **Nova AI Ecosystem**, a multi-agent architecture handling thousands of product decisions simultaneously.
+At the center of the system is Nova AI. Nova is not just a chat assistant; it acts as the multi-agent brain orchestrating the entire platform. Instead of one generic response, Nova splits tasks across specialized agents to decide the best next step for the product itself.
 
-### 1. Return Intent Predictor (RIP)
-* **Purpose:** Predict likelihood of return before a purchase is confirmed.
-* **How it works:** Compiles buyer's return history, sizing patterns, and session behavior (time on page, comparisons). Produces a risk probability score shown as a gauge at checkout.
-* **Impact:** Expected 25-40% reduction in preventable returns.
-
-### 2. Nova Vision Agent (Condition Grading)
-* **Purpose:** Assess physical condition of returned items using computer vision.
-* **How it works:** Analyzes uploaded photos to identify damage type, location, and severity. Assigns an ISO-style grade (A+ -> Like New, C -> Fair, F -> For Parts) and generates a certified Product Health Card.
-
-### 3. Nova Demand Agent (Hyperlocal Matching & Pricing)
-* **Purpose:** Match resale listings to the highest-propensity local buyers and set dynamic prices.
-* **How it works:** Uses H3 geospatial indexing to cluster buyers. Evaluates category affinity, location proximity, and price sensitivity. Calculates dynamic prices using depreciation forecasts (Digital Twins).
-
-### 4. Nova Decision Agent (Refurbishment & Routing)
-* **Purpose:** Decide the most profitable and sustainable path for an item.
-* **How it works:** Evaluates a 4-route decision matrix (Resell, Refurbish, Donate, Recycle) using condition grade, carbon savings potential, and logistics cost. Automatically matches low-value items to verified NGOs.
-
-### 5. Nova Trust Agent (Return Fraud Detector)
-* **Purpose:** Detect and prevent return fraud in real time.
-* **How it works:** Three-layer architecture analyzing behavioral history, transaction patterns, and anomaly detection to classify fraud types (empty box, wardrobing). Reduces false claims by 60-80%.
+* **The Vision Agent:** Handles instant condition scanning, extracting damage reports and assigning grades from user-uploaded photos.
+* **The Routing Agent:** Evaluates local demand and logistics costs to dynamically decide if an item should be resold, donated, or recycled.
+* **The Trust Agent:** Constantly monitors transaction patterns and behavioral anomalies to detect and block return fraud (wardrobing, empty box returns) in real time.
+* **The Prevention Agent:** Predicts return behavior before checkout by analyzing buyer history and sizing mismatch risks.
+* **The Demand Agent:** Estimates product demand and dynamically adjusts resale pricing to ensure inventory doesn't stagnate.
 
 ---
 
-## Deep Dive: Feature Overview
+## Deep Dive: Core Features
 
-1. **Smart Return Wizard:** 5-step frictionless return flow. Upload photos of the product and its original packaging. Live progress bars track the ML models as they extract condition, structural integrity, and detect potential fraud anomalies.
-2. **The Witness Panel:** To solve the "trust deficit" in refurbished products, buyers can converse with an AI-generated digital persona of the previous owner. The LLM integrates the inspection history, cosmetic analysis, and lifecycle records to answer buyer questions ("Why was this returned?", "How is the battery?").
-3. **Eco Pickup Routing:** A proprietary logistics optimization engine. Instead of dispatching dedicated return vehicles, Nova identifies existing delivery vehicles with available capacity and dynamically inserts pickup requests into active routes.
-4. **Digital Product Passport:** Immutable lifecycle timeline and chain of custody for every product. Tracks an item from manufacturing, to the first sale, to return inspections, and eventual secondary ownership.
-5. **Smart Size Advisor:** Reduces apparel returns by cross-referencing buyer preferences, wishlist history, and brand-specific sizing patterns to return a recommended fit score and guidance note at checkout.
-6. **Green Credit DeFi Wallet:** Every return resold directly P2P calculates the kilograms of CO2 saved compared to manufacturing a new product. This carbon saving is minted as tradeable Nectar Credits, functioning as a localized carbon market.
+**🛍️ Circular Marketplace**
+A clean, premium shopping experience where users browse pre-owned items. Every product card is enriched with trust signals, AI pricing, and circular-commerce context, ensuring buyers aren't just shopping—they are transparently seeing the product's next lifecycle.
+
+**🛑 Pre-Checkout Return Risk Prediction**
+Not every return starts after the purchase; we stop waste before it starts. Before checkout, our ML models analyze buyer history and product risk to estimate the likelihood of a future return, guiding the buyer better and flagging risky transactions early.
+
+**🪄 Smart Return Wizard**
+Instead of a plain return form, this intelligent wizard actively guides the customer. It asks for product photos, packaging details, and condition data, allowing the platform to instantly decide whether the item should be resold, refurbished, donated, or recycled—preventing default routing to landfills.
+
+**🛂 Digital Product Passport**
+After inspection, the product receives a permanent lifecycle identity card. This passport stores the condition grade, inspection results, and full product history. Instead of buying a mystery used product, the customer sees a verified record that builds absolute trust.
+
+**🗣️ The Witness Panel**
+To solve the uncertainty of resale, buyers can directly ask contextual questions (e.g., "Why was this returned?", "How is the battery?") to an AI-generated representation of the previous owner. It replaces generic reviews with transparent, item-specific history.
+
+**📍 Hyperlocal P2P & Logistics Command Center**
+The platform attempts to bypass centralized warehouses entirely. If a nearby buyer exists, the product is matched locally. This command center monitors live P2P matches, dramatically reducing shipping distances and lowering reverse-logistics costs.
+
+**💳 Circular Wallet & Green Credits**
+Sustainability is not hidden; it is measured and rewarded. Every good action earns value back into the Circular Wallet. Users track their Green Credits, carbon saved, and trust scores, turning sustainable behavior into a tangible, rewarding economy.
+
+**📊 Real-Time Impact Tracker**
+A live dashboard visualizing the platform's exact environmental achievements. It tracks carbon prevented, waste diverted, items recirculated, and total economic value recovered—proving that circular commerce is both scalable and highly impactful.
 
 ---
 
@@ -123,12 +127,12 @@ Amazon SecondLife is powered by the **Nova AI Ecosystem**, a multi-agent archite
 2. **Upload:** User uploads photos of the item and packaging via the Smart Return Wizard.
 3. **Inspection:** Nova AI runs a live pipeline: Uploading -> Vision Analysis -> Damage Detection -> Condition Grading -> Buyer Matching.
 4. **Decision:** System presents the optimal path (e.g., direct P2P sale to a local buyer, or NGO donation).
-5. **Completion:** User accepts the path and earns Nectar Credits.
+5. **Completion:** User accepts the path and earns Green Credits.
 
 ### Journey 2: Marketplace Purchase
 1. **Browse:** User explores the Circular Marketplace and finds a refurbished item.
 2. **Investigate:** User opens "The Witness Panel" to chat with the AI representation of the previous owner to ask about battery health and scratches.
-3. **Checkout:** The modal displays the Return Risk Gauge (RIP) and Smart Size Advice to ensure confidence.
+3. **Checkout:** The modal displays the Return Risk Gauge and Smart Size Advice to ensure confidence.
 4. **Acquire:** Purchase completes. The Digital Product Passport transfers to the new owner.
 
 ### Journey 3: Enterprise ESG Reporting
@@ -152,7 +156,7 @@ npm install
 ```
 
 ### 2. Environment Variables
-Create a `.env` file in the root directory:
+Create a `.env.local` file in the root directory:
 ```env
 DATABASE_URL="postgresql://user:password@host/db"
 POSTGRES_URL="postgresql://user:password@host/db"
