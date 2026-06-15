@@ -795,6 +795,80 @@ function MarketplaceContent({
           </div>
         </div>
       )}
+
+      {/* Digital Product Passport Modal */}
+      {selectedPassport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm font-sans">
+          <div className="bg-[#FFFBEA] border-4 border-amazon-orange rounded-xl w-full max-w-lg shadow-2xl relative overflow-hidden">
+            {/* Passport Cover / Header */}
+            <div className="bg-amazon-blue p-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-black text-white tracking-widest uppercase">Digital Passport</h3>
+                <p className="text-amazon-orange font-bold text-xs tracking-widest uppercase mt-1">Amazon SecondLife Verified</p>
+              </div>
+              <ShieldCheck className="w-10 h-10 text-amazon-orange" />
+            </div>
+            
+            <div className="p-6 relative">
+              <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                <Leaf className="w-32 h-32 text-emerald-900" />
+              </div>
+
+              <div className="space-y-6 relative z-10">
+                {/* Product Info */}
+                <div className="border-b-2 border-dashed border-slate-300 pb-4">
+                  <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Product Identity</div>
+                  <div className="text-xl font-black text-slate-900">{selectedPassport.productName || 'Pre-owned Item'}</div>
+                  {selectedPassport.brand && <div className="text-sm font-bold text-slate-500 mt-1">Brand: {selectedPassport.brand}</div>}
+                </div>
+
+                {/* Condition & Scores */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Cosmetic Score</div>
+                    <div className="text-2xl font-black text-amazon-blue">{selectedPassport.conditionScore || 'N/A'}<span className="text-sm text-slate-400">/100</span></div>
+                  </div>
+                  
+                  {selectedPassport.functionalScore && (
+                    <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
+                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Functional Score</div>
+                      <div className="text-2xl font-black text-emerald-600">{selectedPassport.functionalScore}<span className="text-sm text-slate-400">/100</span></div>
+                    </div>
+                  )}
+                  
+                  <div className="bg-white rounded-lg p-3 border border-slate-200 shadow-sm col-span-2">
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Diagnostics</div>
+                    <div className="text-sm font-medium text-slate-700">
+                      {selectedPassport.diagnostics ? selectedPassport.diagnostics : 'Standard visual AI inspection passed. Functional integrity maintained.'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sustainability Impact */}
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-start gap-3">
+                  <Leaf className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-xs font-black text-emerald-800 uppercase tracking-wider mb-1">Eco-Impact</div>
+                    <div className="text-sm font-medium text-emerald-700">
+                      Purchasing this pre-owned item extends its lifecycle and prevents an estimated <strong>25 kg</strong> of CO2 emissions compared to buying new.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-slate-50 p-4 border-t border-slate-200 flex justify-end">
+              <button 
+                onClick={() => setSelectedPassport(null)} 
+                className="py-2.5 px-6 text-sm rounded font-extrabold bg-[#ffd814] hover:bg-[#f7ca00] text-slate-900 border border-[#a88734] shadow-sm transition"
+              >
+                Close Passport
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
