@@ -94,29 +94,21 @@ At the center of the system is Nova AI. Nova is not just a chat assistant; it ac
 
 ## Deep Dive: Core Features
 
-**🛍️ Circular Marketplace**
-A clean, premium shopping experience where users browse pre-owned items. Every product card is enriched with trust signals, AI pricing, and circular-commerce context, ensuring buyers aren't just shopping—they are transparently seeing the product's next lifecycle.
+* **Circular Marketplace:** A clean, premium shopping experience where users browse pre-owned items. Every product card is enriched with trust signals, AI pricing, and circular-commerce context, ensuring buyers aren't just shopping—they are transparently seeing the product's next lifecycle.
 
-**🛑 Pre-Checkout Return Risk Prediction**
-Not every return starts after the purchase; we stop waste before it starts. Before checkout, our ML models analyze buyer history and product risk to estimate the likelihood of a future return, guiding the buyer better and flagging risky transactions early.
+* **Pre-Checkout Return Risk Prediction:** Not every return starts after the purchase; we stop waste before it starts. Before checkout, our ML models analyze buyer history and product risk to estimate the likelihood of a future return, guiding the buyer better and flagging risky transactions early.
 
-**🪄 Smart Return Wizard**
-Instead of a plain return form, this intelligent wizard actively guides the customer. It asks for product photos, packaging details, and condition data, allowing the platform to instantly decide whether the item should be resold, refurbished, donated, or recycled—preventing default routing to landfills.
+* **Smart Return Wizard:** Instead of a plain return form, this intelligent wizard actively guides the customer. It asks for product photos, packaging details, and condition data, allowing the platform to instantly decide whether the item should be resold, refurbished, donated, or recycled—preventing default routing to landfills.
 
-**🛂 Digital Product Passport**
-After inspection, the product receives a permanent lifecycle identity card. This passport stores the condition grade, inspection results, and full product history. Instead of buying a mystery used product, the customer sees a verified record that builds absolute trust.
+* **Digital Product Passport:** After inspection, the product receives a permanent lifecycle identity card. This passport stores the condition grade, inspection results, and full product history. Instead of buying a mystery used product, the customer sees a verified record that builds absolute trust.
 
-**🗣️ The Witness Panel**
-To solve the uncertainty of resale, buyers can directly ask contextual questions (e.g., "Why was this returned?", "How is the battery?") to an AI-generated representation of the previous owner. It replaces generic reviews with transparent, item-specific history.
+* **The Witness Panel:** To solve the uncertainty of resale, buyers can directly ask contextual questions (e.g., "Why was this returned?", "How is the battery?") to an AI-generated representation of the previous owner. It replaces generic reviews with transparent, item-specific history.
 
-**📍 Hyperlocal P2P & Logistics Command Center**
-The platform attempts to bypass centralized warehouses entirely. If a nearby buyer exists, the product is matched locally. This command center monitors live P2P matches, dramatically reducing shipping distances and lowering reverse-logistics costs.
+* **Hyperlocal P2P & Logistics Command Center:** The platform attempts to bypass centralized warehouses entirely. If a nearby buyer exists, the product is matched locally. This command center monitors live P2P matches, dramatically reducing shipping distances and lowering reverse-logistics costs.
 
-**💳 Circular Wallet & Green Credits**
-Sustainability is not hidden; it is measured and rewarded. Every good action earns value back into the Circular Wallet. Users track their Green Credits, carbon saved, and trust scores, turning sustainable behavior into a tangible, rewarding economy.
+* **Circular Wallet & Green Credits:** Sustainability is not hidden; it is measured and rewarded. Every good action earns value back into the Circular Wallet. Users track their Green Credits, carbon saved, and trust scores, turning sustainable behavior into a tangible, rewarding economy.
 
-**📊 Real-Time Impact Tracker**
-A live dashboard visualizing the platform's exact environmental achievements. It tracks carbon prevented, waste diverted, items recirculated, and total economic value recovered—proving that circular commerce is both scalable and highly impactful.
+* **Real-Time Impact Tracker:** A live dashboard visualizing the platform's exact environmental achievements. It tracks carbon prevented, waste diverted, items recirculated, and total economic value recovered—proving that circular commerce is both scalable and highly impactful.
 
 ---
 
