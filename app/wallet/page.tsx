@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from "react";
+import { useNovaWallet } from '@/src/components/nova/useNovaPage';
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from "recharts";
 import { Leaf, Wallet as WalletIcon, RefreshCw, ShieldCheck, Zap, TrendingUp, History, PieChart as PieChartIcon, Activity, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 const COLORS = ["#10b981", "#0ea5e9", "#8b5cf6", "#f59e0b", "#f43f5e"];
 
 export default function WalletDashboard() {
+  useNovaWallet();
   const [wallet, setWallet] = useState<any>(null);
   const [carbon, setCarbon] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);

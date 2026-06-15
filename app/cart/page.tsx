@@ -5,7 +5,7 @@ import { useCart } from '@/src/context/CartContext';
 import { formatPrice } from '@/lib/utils';
 import { Trash2, ShieldCheck, Leaf } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useNovaRewards } from '@/src/components/nova/useNovaPage';
+import { useNovaRewards, useNovaCartWelcome } from '@/src/components/nova/useNovaPage';
 
 export default function CartPage() {
   const { cartItems, cartTotal, cartCount, updateQuantity, removeFromCart, clearCart } = useCart();
@@ -14,6 +14,7 @@ export default function CartPage() {
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
   const { novaReward } = useNovaRewards();
+  useNovaCartWelcome(cartCount === 0);
 
   const handleCheckout = () => {
     setIsCheckingOut(true);

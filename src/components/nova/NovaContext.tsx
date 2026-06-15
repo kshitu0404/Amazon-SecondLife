@@ -23,6 +23,8 @@ export interface NovaMessageOptions {
   duration?: number;
   /** If provided, triggers the Nectar Credits reward popup. */
   reward?: NovaReward;
+  /** If provided, adds a clickable action button under the message. */
+  action?: { label: string; href: string };
 }
 
 export interface NovaReward {
@@ -38,6 +40,7 @@ export interface NovaContextValue {
   visible: boolean;
   setVisible: (v: boolean) => void;
   rewardPopup: NovaReward | null;
+  action: { label: string; href: string } | null;
   isThinking: boolean;
 
   /** Show a speech bubble with optional mood + auto-dismiss. */
@@ -70,6 +73,7 @@ export function NovaProvider({ children }: { children: ReactNode }) {
   const [message, setMessage] = useState<string | null>(null);
   const [visible, setVisible] = useState<boolean>(true);
   const [rewardPopup, setRewardPopup] = useState<NovaReward | null>(null);
+  const [action, setAction] = useState<{ label: string; href: string } | null>(null);
   const [isThinking, setIsThinking] = useState<boolean>(false);
 
   // Chat State
@@ -107,11 +111,13 @@ export function NovaProvider({ children }: { children: ReactNode }) {
     setMood(m);
     setMessage(msg);
     setIsThinking(false);
+    setAction(options?.action || null);
     if (reward) setRewardPopup(reward);
     if (duration > 0) {
       setTimeout(() => {
         setMessage(null);
         setMood('idle');
+        setAction(null);
         if (reward) setRewardPopup(null);
       }, duration);
     }
@@ -121,6 +127,8 @@ export function NovaProvider({ children }: { children: ReactNode }) {
     setMood('scanning');
     setMessage(msg);
     setIsThinking(true);
+    setAction(null);
+    setVisible(true);
   }, []);
 
   const novaDone = useCallback((msg: string, options: NovaMessageOptions = {}) => {
@@ -133,6 +141,7 @@ export function NovaProvider({ children }: { children: ReactNode }) {
     setMood('idle');
     setIsThinking(false);
     setRewardPopup(null);
+    setAction(null);
   }, []);
 
   return (
@@ -141,6 +150,7 @@ export function NovaProvider({ children }: { children: ReactNode }) {
       message, setMessage,
       visible, setVisible,
       rewardPopup,
+      action,
       isThinking,
       nova,
       novaThink,

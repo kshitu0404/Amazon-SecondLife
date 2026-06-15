@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import AraTab from "./AraTab";
 import CopilotTab from "./CopilotTab";
 import { Star, Sparkles } from "lucide-react";
+import { useNovaSellerWelcome } from '@/src/components/nova/useNovaPage';
 
 export default function SellerDashboardLayout() {
+  useNovaSellerWelcome();
   const [activeTab, setActiveTab] = useState<'ara' | 'copilot'>('ara');
 
   return (

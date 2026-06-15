@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNovaDriver } from '@/src/components/nova/useNovaPage';
 import { Truck, MapPin, Package, KeyRound, CheckCircle2, Navigation, AlertTriangle, BatteryCharging, Box } from 'lucide-react';
 
-export default function DriverDashboard() {
+export default function DriverPortal() {
+  useNovaDriver();
   const [pickups, setPickups] = useState<any[]>([]);
   const [otpInput, setOtpInput] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);

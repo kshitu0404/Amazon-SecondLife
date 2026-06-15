@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArrowRight, Box, Camera, CheckCircle, Leaf, ShieldCheck, Truck, RefreshCw, DollarSign, Upload, Zap, Package, AlertTriangle, AlertCircle, CheckCircle2 } from "lucide-react";
 import NovaProgressOverlay, { NovaPhase } from '@/src/components/nova/NovaProgressOverlay';
+import { useNovaReturnWizard } from '@/src/components/nova/useNovaPage';
 
 // Mock Orders
 const MOCK_ORDERS = [
@@ -37,6 +38,7 @@ const STEPS = ["Select item", "Upload photos", "Upload packaging", "AI inspectio
 // STAGE_LABELS removed in favor of NovaPhase
 
 export default function ReturnWizard() {
+  useNovaReturnWizard();
   const [orders, setOrders] = useState<any[]>([]);
   const [step, setStep] = useState(0);
   const [order, setOrder] = useState<any>(null);

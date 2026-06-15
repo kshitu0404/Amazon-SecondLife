@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useNovaImpact } from '@/src/components/nova/useNovaPage';
 import SVGChart from '@/components/SVGChart';
 import { mockImpactStats } from '@/data/mockProducts';
 import { Leaf, Trash2, ShieldCheck, HelpCircle, Sparkles, RefreshCw, Calculator, ArrowRight, DollarSign, Trophy, Activity, Zap, Star } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
 export default function ImpactPage() {
+  useNovaImpact();
+  const router = useRouter();
   // Data States
   const [impactData, setImpactData] = useState<any>(null);
   const [loading, setLoading] = useState(true);

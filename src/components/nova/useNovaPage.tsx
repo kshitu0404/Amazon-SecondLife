@@ -176,8 +176,12 @@ export function useNovaMarketplace() {
 
   const novaMatchFound = ({ count, radius, productType }: MarketplaceMatchParams): void => {
     nova(
-      `🐝 I found ${count} buyers within ${radius} km interested in ${productType}.\n\nSending to warehouse costs more than the product. I recommend local exchange.`,
-      { mood: 'excited', duration: 7000 }
+      `🐝 I analyzed your 5 products. 5 need attention — about $863 recoverable and 229.2 kg CO₂ to save.`,
+      { 
+        mood: 'excited', 
+        duration: 4000,
+        action: { label: "Open Circular Concierge", href: "/concierge" }
+      }
     );
   };
 
@@ -259,4 +263,80 @@ export function useNovaReturnPrevention() {
   };
 
   return { novaReturnWarning };
+}
+
+// ─── 10. Admin portal ───────────────────────────────────────────────────────────
+
+export function useNovaAdmin() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 System status optimal. You have full visibility over logistics, fraud detection, and overall network health.', { mood: 'proud', duration: 6000 });
+  }, [nova]);
+}
+
+// ─── 11. Circular Wallet ──────────────────────────────────────────────────────
+
+export function useNovaWallet() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 Welcome to your Circular Wallet! You can view your Nectar Trust Score, track your green credits, and see your total carbon savings here.', { mood: 'happy', duration: 6000 });
+  }, [nova]);
+}
+
+// ─── 12. Circular Concierge ───────────────────────────────────────────────────
+
+export function useNovaConcierge() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 Here is your personalized inventory dashboard. I\'ve analyzed your items to find the best resale and donation opportunities!', { mood: 'excited', duration: 7000 });
+  }, [nova]);
+}
+
+// ─── 13. Smart Return Wizard ──────────────────────────────────────────────────
+
+export function useNovaReturnWizard() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 Hi! Let\'s get your item returned or re-homed. I\'ll guide you through the AI inspection process.', { mood: 'happy', duration: 6000 });
+  }, [nova]);
+}
+
+// ─── 14. Cart ─────────────────────────────────────────────────────────────────
+
+export function useNovaCartWelcome(isEmpty: boolean = false) {
+  const { nova } = useNova();
+  useEffect(() => {
+    if (isEmpty) {
+      nova('🐝 Oh no, your cart is empty! That makes me a little sad. Let\'s go find some great circular products!', { mood: 'sad', duration: 6000 });
+    } else {
+      nova('🐝 Your cart is looking good! Opting for Amazon Day Delivery or Eco-Pickup will earn you extra Green Credits.', { mood: 'happy', duration: 6000 });
+    }
+  }, [nova, isEmpty]);
+}
+
+// ─── 15. Impact Dashboard ─────────────────────────────────────────────────────
+
+export function useNovaImpact() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 Look at all the good you\'ve done! Your choices are actively reducing carbon emissions and keeping products in the loop.', { mood: 'proud', duration: 6000 });
+  }, [nova]);
+}
+
+// ─── 16. Seller Dashboard ─────────────────────────────────────────────────────
+
+export function useNovaSellerWelcome() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 Welcome to your Seller Hub! Use my Copilot to get AI-powered pricing and market insights for your listings.', { mood: 'happy', duration: 6000 });
+  }, [nova]);
+}
+
+// ─── 17. Driver Portal ────────────────────────────────────────────────────────
+
+export function useNovaDriver() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 Hello Driver! I\'ve optimized your route for maximum efficiency and minimum carbon footprint today.', { mood: 'proud', duration: 6000 });
+  }, [nova]);
 }

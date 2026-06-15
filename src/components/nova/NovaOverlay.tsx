@@ -15,6 +15,7 @@ import { AnimatePresence, motion, useMotionValue, useSpring } from 'framer-motio
 import { useNova } from './NovaContext';
 import NovaBee from './NovaBee';
 import NovaChat from './NovaChat';
+import Link from 'next/link';
 
 // ─── Thinking dots ───────────────────────────────────────────────────────────
 
@@ -56,7 +57,7 @@ function RewardPopup({ credits, reason }: { credits: number; reason?: string }) 
 // ─── Main overlay ─────────────────────────────────────────────────────────────
 
 export default function NovaOverlay() {
-  const { mood, message, visible, rewardPopup, isThinking, isChatOpen, setIsChatOpen } = useNova();
+  const { mood, message, visible, rewardPopup, action, isThinking, isChatOpen, setIsChatOpen } = useNova();
 
   // Smooth bobbing via spring on a sine wave
   const rawY = useMotionValue(0);
@@ -128,7 +129,17 @@ export default function NovaOverlay() {
                     <ThinkingDots />
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-line">{message}</p>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-line">{message}</p>
+                    {action && (
+                      <Link 
+                        href={action.href} 
+                        className="bg-[#f59e0b] hover:bg-[#d97706] text-white text-xs font-bold py-1.5 px-3 rounded-lg self-start mt-1 transition-colors shadow-sm"
+                      >
+                        {action.label}
+                      </Link>
+                    )}
+                  </div>
                 )}
               </div>
             </motion.div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
+import AdminNovaWrapper from './AdminNovaWrapper';
 import { 
   ShieldAlert, 
   PackageSearch, 
@@ -16,6 +17,7 @@ import {
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPortal() {
+
   // Fetch latest database records
   const orders = await prisma.order.findMany({ 
     orderBy: { createdAt: 'desc' },
@@ -40,6 +42,7 @@ export default async function AdminPortal() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 p-8">
+      <AdminNovaWrapper />
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header Section */}
