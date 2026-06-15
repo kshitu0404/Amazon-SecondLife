@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { Leaf, HeartHandshake, PackageOpen, Users, Globe2, Sparkles, Box, ArrowRight, CheckCircle2, TrendingUp, Search, BadgeCheck } from 'lucide-react';
 import NgoNovaWrapper from './NgoNovaWrapper';
 
-export const revalidate = 0; // Dynamic rendering
+export const dynamic = 'force-dynamic';
 
 export default async function NgoPortal() {
   // Fetch Analytics

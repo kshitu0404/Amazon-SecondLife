@@ -2,7 +2,7 @@ import React from 'react';
 import prisma from '@/lib/prisma';
 import SmartMarketplaceClient from './SmartMarketplaceClient';
 
-export const revalidate = 0; // Dynamic
+export const dynamic = 'force-dynamic';
 
 export default async function SmartMarketplacePage() {
   // Fetch active marketplace products with geodata
