@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { X, User, Home, Upload, Cpu, Truck, FileText, BarChart2, ShoppingBag, Percent, HelpCircle, LogOut, Wallet, Leaf } from 'lucide-react';
+import { X, User, Home, Upload, Cpu, Truck, FileText, BarChart2, ShoppingBag, Percent, HelpCircle, LogOut, Wallet, Leaf, BrainCircuit, Map } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -39,10 +39,12 @@ export default function Sidebar() {
 
   const coreLinks = [
     { name: 'Home Portal', href: '/', icon: Home },
-    { name: 'Certified Marketplace', href: '/marketplace', icon: ShoppingBag },
-    { name: 'Smart Return Wizard', href: '/return-wizard', icon: Upload },
-    { name: 'History Dashboard', href: '/history', icon: FileText },
-    { name: 'Eco Impact Ledger', href: '/impact', icon: Leaf },
+    { name: 'Circular Marketplace', href: '/marketplace', icon: ShoppingBag },
+    { name: 'Product Advisor', href: '/concierge', icon: BrainCircuit },
+    { name: 'Smart Return', href: '/return-wizard', icon: Upload },
+    { name: 'Smart Marketplace', href: '/smart-marketplace', icon: Map },
+    { name: 'Lifecycle History', href: '/passport/lifecycle', icon: FileText },
+    { name: 'Impact Tracker', href: '/impact', icon: Leaf },
     { name: 'Circular Wallet', href: '/wallet', icon: Wallet },
   ];
 

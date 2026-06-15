@@ -116,41 +116,30 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Driver App Link */}
-        <Link 
-          href="/driver"
-          className="hidden sm:flex flex-col text-left border border-transparent hover:border-white px-2 py-1.5 rounded transition cursor-pointer leading-tight select-none"
-        >
-          <span className="text-[11px] text-slate-300">Delivery Partner</span>
-          <span className="text-xs font-extrabold text-white flex items-center gap-0.5">
-            Driver App
-          </span>
-        </Link>
-
-        {/* Seller Copilot Link */}
-        <Link 
-          href="/seller-dashboard"
-          className={`hidden sm:flex flex-col text-left border border-transparent hover:border-white px-2 py-1.5 rounded transition cursor-pointer leading-tight select-none group ${
-            pathname === '/seller-dashboard' ? 'border-white' : ''
-          }`}
-        >
-          <span className="text-[11px] text-slate-300">Merchant Tools</span>
-          <span className={`text-xs font-extrabold flex items-center gap-0.5 transition-colors ${
-            pathname === '/seller-dashboard' ? 'text-amber-500' : 'text-white group-hover:text-amber-500'
-          }`}>
-            Seller Copilot
-          </span>
-        </Link>
-
         {/* Account and Lists dropdown */}
-        <div 
-          onClick={() => router.push('/marketplace')}
-          className="flex flex-col text-left border border-transparent hover:border-white px-2 py-1.5 rounded transition cursor-pointer leading-tight select-none"
-        >
+        <div className="relative group flex flex-col text-left border border-transparent hover:border-white px-2 py-1.5 rounded transition cursor-pointer leading-tight select-none">
           <span className="text-[11px] text-slate-300">Hello, Rohan</span>
           <span className="text-xs font-extrabold text-white flex items-center gap-0.5">
-            Account & Lists <ChevronDown className="w-3 h-3 text-slate-400" />
+            Account & Lists <ChevronDown className="w-3 h-3 text-slate-400 group-hover:rotate-180 transition-transform" />
           </span>
+
+          {/* Dropdown Menu */}
+          <div className="absolute top-full right-0 pt-1 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+            <div className="bg-white border border-slate-200 rounded-md shadow-lg py-2">
+              <div className="px-4 py-1 flex items-center">
+                <span className="text-xs font-bold text-slate-900">Your Accounts</span>
+              </div>
+              <Link href="/seller-dashboard" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-amber-600 font-medium">
+                Seller Copilot
+              </Link>
+              <Link href="/driver" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-amber-600 font-medium">
+                Pickup Partner App
+              </Link>
+              <Link href="/ngo" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-amber-600 font-medium">
+                NGO Portal
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Amazon Hives / SecondLife link */}

@@ -180,7 +180,7 @@ export function useNovaMarketplace() {
       { 
         mood: 'excited', 
         duration: 4000,
-        action: { label: "Open Circular Concierge", href: "/concierge" }
+        action: { label: "Open Product Advisor", href: "/concierge" }
       }
     );
   };
@@ -192,6 +192,10 @@ export function useNovaMarketplace() {
 
 export function useNovaHealthCard() {
   const { nova } = useNova();
+
+  useEffect(() => {
+    nova('🐝 Welcome to the Digital Product Passport! Here you can see my complete diagnostic report and verify the product\'s authenticity before you buy.', { mood: 'proud', duration: 8000 });
+  }, [nova]);
 
   const novaHealthReport = ({ conditionScore, batteryHealth, authentic, confidence }: HealthReportParams): void => {
     nova(
@@ -283,7 +287,7 @@ export function useNovaWallet() {
   }, [nova]);
 }
 
-// ─── 12. Circular Concierge ───────────────────────────────────────────────────
+// ─── 12. Product Advisor ───────────────────────────────────────────────────
 
 export function useNovaConcierge() {
   const { nova } = useNova();
@@ -307,7 +311,7 @@ export function useNovaCartWelcome(isEmpty: boolean = false) {
   const { nova } = useNova();
   useEffect(() => {
     if (isEmpty) {
-      nova('🐝 Oh no, your cart is empty! That makes me a little sad. Let\'s go find some great circular products!', { mood: 'sad', duration: 6000 });
+      nova('🐝 Oh no, your cart is empty! That makes me a little sad. Let\'s go find some great circular products!', { mood: 'thinking', duration: 6000 });
     } else {
       nova('🐝 Your cart is looking good! Opting for Amazon Day Delivery or Eco-Pickup will earn you extra Green Credits.', { mood: 'happy', duration: 6000 });
     }
@@ -337,6 +341,25 @@ export function useNovaSellerWelcome() {
 export function useNovaDriver() {
   const { nova } = useNova();
   useEffect(() => {
-    nova('🐝 Hello Driver! I\'ve optimized your route for maximum efficiency and minimum carbon footprint today.', { mood: 'proud', duration: 6000 });
+    nova('🐝 Hello Pickup Partner! I\'ve optimized your route for maximum efficiency and minimum carbon footprint today.', { mood: 'proud', duration: 6000 });
   }, [nova]);
 }
+
+// ─── 18. NGO Portal ───────────────────────────────────────────────────────────
+
+export function useNovaNGO() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 Welcome to the Local NGO Portal! We have fresh inventory from community donations ready to be claimed and redistributed.', { mood: 'excited', duration: 7000 });
+  }, [nova]);
+}
+
+// ─── 19. Smart Marketplace ────────────────────────────────────────────────────
+
+export function useNovaSmartMarketplace() {
+  const { nova } = useNova();
+  useEffect(() => {
+    nova('🐝 Exploring our geo-intelligent map? I can help you filter local products by AI-verified condition grades to find the perfect match nearby!', { mood: 'happy', duration: 7500 });
+  }, [nova]);
+}
+

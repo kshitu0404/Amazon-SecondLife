@@ -16,8 +16,9 @@ export default function SubNavbar() {
 
   const navLinks = [
     { label: 'Circular Marketplace', href: '/marketplace' },
+    { label: 'Product Advisor', href: '/concierge' },
     { label: 'Smart Return', href: '/return-wizard' },
-    { label: 'Sustainability Ledger', href: '/impact' },
+    { label: 'Smart Marketplace', href: '/smart-marketplace' },
     { label: 'Circular Wallet', href: '/wallet' },
   ];
 
@@ -60,6 +61,18 @@ export default function SubNavbar() {
           className="px-2.5 py-1 rounded-sm border border-transparent hover:border-white transition"
         >
           Amazon Basics
+        </Link>
+        <Link
+          href="/impact"
+          className="px-2.5 py-1 rounded-sm border border-transparent hover:border-white transition"
+        >
+          Impact Tracker
+        </Link>
+        <Link
+          href="/passport/lifecycle"
+          className="px-2.5 py-1 rounded-sm border border-transparent hover:border-white transition"
+        >
+          Lifecycle History
         </Link>
         <Link
           href="/return-wizard"

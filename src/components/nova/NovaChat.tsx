@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNova } from './useNovaPage'; // Ensure this exists, or import from NovaContext
 import { useNova as useNovaCtx } from './NovaContext';
 import { X, Minus, Send, Sparkles } from 'lucide-react';
 import Image from 'next/image';

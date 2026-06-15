@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from "recharts";
-import { ShieldCheck, Leaf, Activity, Zap, TrendingDown, Clock, Target, Repeat, Star } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Leaf, Activity, Zap, TrendingDown, Clock, Target, Repeat, Star } from "lucide-react";
+import { useNovaHealthCard } from "@/src/components/nova/useNovaPage";
 
 // Mock Data Source simulating the backend response
 const MOCK_DATA = {
@@ -66,9 +68,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function DigitalProductPassport() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DigitalProductPassportInner />
+    </Suspense>
+  );
+}
+
+function DigitalProductPassportInner() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const [data, setData] = useState<any>(null);
+
+  useNovaHealthCard();
 
   useEffect(() => {
     // In a real app, we'd fetch based on 'id'. Using mock for demo.
@@ -91,15 +103,39 @@ export default function DigitalProductPassport() {
   const { order: p, ces, twin, buyer_matches, story } = data;
 
   return (
-    <div className="p-6 w-full flex flex-col gap-6 max-w-7xl mx-auto pb-20">
-      <div className="w-full space-y-6">
+    <div className="min-h-screen pb-20">
+      {/* Yellow Brand Header */}
+      <div className="bg-[#FADD57] text-slate-900 pt-12 pb-24 px-6 border-b border-[#EBCF45] relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-2 text-sm text-slate-800 font-bold mb-4">
+            <Link href="/marketplace" className="hover:text-amazon-orange transition flex items-center gap-1">
+              <ArrowLeft className="w-4 h-4" /> Back to Circular Catalogue
+            </Link>
+          </div>
+          <span className="text-xs font-black uppercase tracking-widest opacity-70 mb-2 block">Product Health Card</span>
+          <h1 className="text-4xl font-black tracking-tight mb-3">
+            {p.title}
+          </h1>
+          <p className="text-lg font-medium opacity-80 max-w-2xl">
+            Certified Grade {buyer_matches?.[0]?.grade || 'B'}. Inspected and ready for a second life.
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 -mt-12 relative z-20 space-y-6">
         
         {/* Header Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-slate-500 font-bold">
-          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider text-[10px]">
-            <ShieldCheck className="w-3.5 h-3.5" /> Digital Product Passport
-          </span>
-          <span>{p.order_number}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-slate-500 font-bold">
+            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider text-[10px]">
+              <ShieldCheck className="w-3.5 h-3.5" /> Digital Product Passport
+            </span>
+            <span>{p.order_number}</span>
+          </div>
+          
+          <Link href={`/passport/lifecycle${id ? `?id=${id}` : ''}`} className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-2">
+            <Activity className="w-4 h-4" /> View Lifecycle Timeline
+          </Link>
         </div>
 
         {/* Hero Product Card */}

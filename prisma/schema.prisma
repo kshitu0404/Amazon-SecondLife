@@ -107,3 +107,47 @@ model P2PMatch {
   createdAt   DateTime @default(now()) // Used to enforce the 2-hour holding window
   updatedAt   DateTime @updatedAt
 }
+
+model Ngo {
+  id          String   @id @default(cuid())
+  name        String
+  focusArea   String
+  location    String
+  
+  donations   Donation[]
+  requests    NgoRequest[]
+  
+  createdAt   DateTime @default(now())
+}
+
+model Donation {
+  id              String   @id @default(cuid())
+  itemName        String
+  category        String
+  condition       String
+  source          String   // 'Amazon Warehouse', 'Customer', 'Corporate'
+  status          String   @default("In Transit") // 'In Transit', 'Delivered', 'Distributed'
+  
+  co2SavedKg      Float
+  peopleImpacted  Int
+  wasteDivertedKg Float
+  
+  ngoId           String?
+  ngo             Ngo?     @relation(fields: [ngoId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model NgoRequest {
+  id              String   @id @default(cuid())
+  ngoId           String
+  ngo             Ngo      @relation(fields: [ngoId], references: [id])
+  
+  itemCategory    String
+  quantityNeeded  Int
+  urgency         String   // 'High', 'Medium', 'Low'
+  status          String   @default("Open") // 'Open', 'Matched', 'Fulfilled'
+  
+  createdAt       DateTime @default(now())
+}

@@ -122,7 +122,7 @@ export default function CircularConciergePage() {
             <div className="bg-slate-800 p-2 rounded-xl border border-slate-700 shadow-sm">
               <BrainCircuit className="w-6 h-6 text-[#FADD57]" />
             </div>
-            <h1 className="text-3xl font-black tracking-tight">Circular Concierge</h1>
+            <h1 className="text-3xl font-black tracking-tight">Product Advisor</h1>
           </div>
           <p className="text-xl text-slate-800 font-bold leading-relaxed max-w-2xl">
             {mockData.headline}

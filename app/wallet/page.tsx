@@ -385,7 +385,7 @@ export default function WalletDashboard() {
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={carbon.by_action} dataKey="carbon" nameKey="action" cx="50%" cy="50%" outerRadius={80} fill="#10b981" label={(entry) => entry.action} labelLine={false} className="font-bold text-[10px] fill-slate-700">
+                <Pie data={carbon.by_action} dataKey="carbon" nameKey="action" cx="50%" cy="50%" outerRadius={80} fill="#10b981" label={(entry: any) => entry.action} labelLine={false} className="font-bold text-[10px] fill-slate-700">
                   {carbon.by_action.map((_: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}

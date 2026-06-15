@@ -215,7 +215,22 @@ function MarketplaceContent({
   };
 
   return (
-    <div className="p-6 w-full flex flex-col gap-6 max-w-7xl mx-auto">
+    <div className="min-h-screen pb-20">
+      
+      {/* Yellow Brand Header */}
+      <div className="bg-[#FADD57] text-slate-900 pt-12 pb-24 px-6 border-b border-[#EBCF45] relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <span className="text-xs font-black uppercase tracking-widest opacity-70 mb-2 block">Circular Catalogue</span>
+          <h1 className="text-4xl font-black tracking-tight mb-3">
+            {searchQuery ? `Search results for "${searchQuery}"` : 'Certified Pre-Owned SecondLife Listings'}
+          </h1>
+          <p className="text-lg font-medium opacity-80 max-w-2xl">
+            Showing {filteredProducts.length} verified eco-listings matching your filters. Every purchase prevents e-waste.
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 -mt-12 relative z-20 flex flex-col gap-6">
       
       {/* 6 Interconnected Channels (Added without altering the surrounding styles) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -228,16 +243,7 @@ function MarketplaceContent({
       </div>
 
       {/* Search Header Info Bar */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-left">
-        <div>
-          <span className="text-xs text-slate-500 font-extrabold uppercase">Circular Catalogue</span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">
-            {searchQuery ? `Search results for "${searchQuery}"` : 'Certified Pre-Owned SecondLife Listings'}
-          </h1>
-          <p className="text-xs text-slate-600 mt-1 font-medium">
-            Showing {filteredProducts.length} verified eco-listings matching your filters.
-          </p>
-        </div>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
         
         {/* Local Search Bar */}
         <div className="relative flex-grow max-w-md mx-4 hidden lg:block">
@@ -545,10 +551,10 @@ function MarketplaceContent({
                       {/* Cart and Passport CTAs */}
                       <div className="grid grid-cols-3 gap-2 mt-3.5">
                         <button
-                          onClick={() => setSelectedPassport(product.healthCard?.raw || { productName: product.name, conditionScore: product.healthCard.cosmeticScore * 10 })}
+                          onClick={() => router.push(`/health-card?id=${product.id}`)}
                           className="col-span-1 bg-slate-50 hover:bg-slate-100 text-slate-800 text-[11px] font-bold py-2 px-1 rounded border border-slate-300 text-center transition shadow-xs cursor-pointer"
                         >
-                          Passport
+                          Health Card
                         </button>
                         
                         <button
@@ -877,6 +883,7 @@ function MarketplaceContent({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

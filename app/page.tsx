@@ -100,12 +100,6 @@ export default function Home() {
 
               <div className="flex items-center gap-3 pt-2">
                 <button
-                  onClick={() => router.push('/upload')}
-                  className="bg-[#0f172a] hover:bg-[#1e293b] text-white text-xs sm:text-sm font-bold py-2.5 px-5 rounded-lg shadow-lg transition transform hover:scale-105 cursor-pointer flex items-center gap-2"
-                >
-                  Start Trade-in <span className="font-normal text-lg leading-none">→</span>
-                </button>
-                <button
                   onClick={() => router.push('/marketplace')}
                   className="bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 text-xs sm:text-sm font-bold py-2.5 px-5 rounded-lg shadow-lg transition transform hover:scale-105 cursor-pointer flex items-center gap-2"
                 >
