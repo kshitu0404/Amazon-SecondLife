@@ -15,6 +15,13 @@ model Product {
   name        String
   category    String
   price       Float
+
+  // Data density fields
+  brand       String?
+  color       String?
+  size        String?
+  image       String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -49,6 +56,12 @@ model TradeIn {
   condition   String
   sellerNotes String?
   
+  // Seller details for density
+  sellerName  String?
+  sellerRating Float?
+  city        String?
+  state       String?
+
   // Geolocation & Indexing
   lat         Float
   lng         Float

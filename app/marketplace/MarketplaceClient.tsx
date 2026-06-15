@@ -33,7 +33,7 @@ const SYNONYMS: Record<string, string[]> = {
   'apple': ['iphone', 'macbook', 'ipad', 'watch'],
 };
 
-export default function MarketplaceClient({ initialItems = [] }: { initialItems: any[] }) {
+export default function MarketplaceClient(props: any) {
   return (
     <React.Suspense fallback={
       <div className="flex-grow flex items-center justify-center p-8">
@@ -43,19 +43,40 @@ export default function MarketplaceClient({ initialItems = [] }: { initialItems:
         </div>
       </div>
     }>
-      <MarketplaceContent initialItems={initialItems} />
+      <MarketplaceContent {...props} />
     </React.Suspense>
   );
 }
 
-function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
+function MarketplaceContent({ 
+  initialItems = [],
+  totalCount = 0,
+  totalPages = 1,
+  currentPage = 1,
+  uniqueBrands = [],
+  uniqueLocations = []
+}: { 
+  initialItems: any[];
+  totalCount?: number;
+  totalPages?: number;
+  currentPage?: number;
+  uniqueBrands?: string[];
+  uniqueLocations?: string[];
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { addToCart } = useCart();
 
-  // State
-  const [products, setProducts] = useState<any[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  // URL States
+  const selectedCategory = searchParams.get('category') || 'All';
+  const selectedCondition = searchParams.get('condition') || 'All';
+  const selectedBrand = searchParams.get('brand') || 'All';
+  const selectedLocation = searchParams.get('location') || 'All';
+  const maxPrice = parseInt(searchParams.get('maxPrice') || '1000', 10);
+  const sortBy = searchParams.get('sortBy') || 'featured';
+  const searchQuery = searchParams.get('search') || '';
+
+  // Local State
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [selectedPassport, setSelectedPassport] = useState<any>(null);
 
@@ -69,136 +90,71 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
   const [pageMountTime] = useState(Date.now());
 
   const { novaSearchBuyers, novaMatchFound } = useNovaMarketplace();
-  
-  // Filter States
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedCondition, setSelectedCondition] = useState('All');
-  const [maxPrice, setMaxPrice] = useState(1000);
-  const [sortBy, setSortBy] = useState('featured');
-  const [searchQuery, setSearchQuery] = useState('');
 
-  // Hydrate lists with standard products + any custom uploaded product in localStorage
+  // Helper to push URL changes
+  const updateFilter = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value && value !== 'All' && value !== '1000') {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+    if (key !== 'page') params.set('page', '1');
+    router.push(`/marketplace?${params.toString()}`);
+  };
+
+  // Map incoming items
+  const filteredProducts = initialItems.map((item: any) => ({
+    id: item.id,
+    name: item.product?.name || 'Unknown Product',
+    category: item.product?.category || 'Electronics',
+    brand: item.product?.brand || 'Unknown',
+    location: item.city || 'Unknown',
+    resalePrice: item.product?.price || 0,
+    originalPrice: (item.product?.price || 0) * 1.3,
+    condition: item.condition,
+    conditionNotes: item.sellerNotes || '',
+    image: item.product?.image || '/images/products/placeholder.jpg',
+    sellerName: item.sellerName || 'Amazon Certified',
+    co2SavedKg: 25,
+    healthCard: item.productHealthCard ? {
+      cosmeticScore: Math.floor(item.productHealthCard.conditionScore / 10) || 9,
+      batteryHealth: item.productHealthCard.performanceHealth?.includes('Battery') ? parseInt(item.productHealthCard.performanceHealth.match(/\d+/)?.[0] || '100') : 100,
+      warrantyStatus: 'Certified',
+      raw: item.productHealthCard
+    } : {
+      cosmeticScore: 9,
+      batteryHealth: 100,
+      warrantyStatus: 'Certified',
+      raw: null
+    }
+  }));
+
+  // Sort logic (client side for simplicity since we want these exact sorts and DB might not match)
+  if (sortBy === 'price-low') {
+    filteredProducts.sort((a, b) => a.resalePrice - b.resalePrice);
+  } else if (sortBy === 'price-high') {
+    filteredProducts.sort((a, b) => b.resalePrice - a.resalePrice);
+  } else if (sortBy === 'grade') {
+    filteredProducts.sort((a, b) => b.healthCard.cosmeticScore - a.healthCard.cosmeticScore);
+  }
+
+  // Nova AI Integration
   useEffect(() => {
-    const liveMapped = initialItems.map((item: any) => ({
-      id: item.id,
-      name: item.product?.name || 'Unknown Product',
-      category: item.product?.category || 'Electronics',
-      resalePrice: item.product?.price || 0,
-      originalPrice: (item.product?.price || 0) * 1.3,
-      condition: item.condition,
-      conditionNotes: item.sellerNotes || '',
-      image: '/images/products/placeholder.jpg',
-      sellerName: 'Amazon Certified',
-      co2SavedKg: 25,
-      healthCard: item.productHealthCard ? {
-        cosmeticScore: Math.floor(item.productHealthCard.conditionScore / 10) || 9,
-        batteryHealth: item.productHealthCard.performanceHealth.includes('Battery') ? parseInt(item.productHealthCard.performanceHealth.match(/\d+/)?.[0] || '100') : 100,
-        warrantyStatus: 'Certified',
-        raw: item.productHealthCard
-      } : {
-        cosmeticScore: 9,
-        batteryHealth: 100,
-        warrantyStatus: 'Certified',
-        raw: null
-      }
-    }));
-    
-    // Fallback to mock products if DB is empty for demo purposes
-    let list: any[] = [...liveMapped];
-    if (list.length === 0) {
-      list = mockProducts.map(p => ({ ...p, sellerName: p.sellerName ?? 'Amazon Certified' }));
-      
-      try {
-        const customListings = JSON.parse(localStorage.getItem('ara_listings') || '[]');
-        if (customListings.length > 0) {
-          list = [...customListings, ...list];
-        }
-      } catch (e) {}
-    }
-    setProducts(list);
-  }, [initialItems]);
-
-  // Synchronize state filters with query parameters
-  useEffect(() => {
-    const categoryQuery = searchParams.get('category') || 'All';
-    const searchQueryParam = searchParams.get('search') || '';
-    
-    setSelectedCategory(categoryQuery);
-    setSearchQuery(searchQueryParam);
-  }, [searchParams]);
-
-  // Apply filters
-  useEffect(() => {
-    let result = [...products];
-
-    // Filter by Category
-    if (selectedCategory !== 'All') {
-      result = result.filter((p) => p.category.toLowerCase() === selectedCategory.toLowerCase());
-    }
-
-    // Filter by Condition
-    if (selectedCondition !== 'All') {
-      result = result.filter((p) => p.condition === selectedCondition);
-    }
-
-    // Filter by Price
-    result = result.filter((p) => p.resalePrice <= maxPrice);
-
-    // Filter by Search Query (Robust Synonym Matching)
-    if (searchQuery.trim()) {
-      const words = searchQuery.toLowerCase().split(/\s+/);
-      
-      result = result.filter((p) => {
-        // Deep search across the entire product object (name, description, AI notes, category, etc.)
-        const productText = JSON.stringify(p).toLowerCase();
-        
-        // Every word in the search query must be satisfied
-        return words.every(word => {
-          // Satisfied if the word itself is directly in the product text
-          if (productText.includes(word)) return true;
-          
-          // Or if any of its synonyms are found in the product text
-          const synonyms = SYNONYMS[word] || [];
-          return synonyms.some(syn => productText.includes(syn));
-        });
-      });
-    }
-
-    // Sort Results
-    if (sortBy === 'price-low') {
-      result.sort((a, b) => a.resalePrice - b.resalePrice);
-    } else if (sortBy === 'price-high') {
-      result.sort((a, b) => b.resalePrice - a.resalePrice);
-    } else if (sortBy === 'co2') {
-      result.sort((a, b) => b.co2SavedKg - a.co2SavedKg);
-    } else if (sortBy === 'lowest_co2') {
-      result.sort((a, b) => b.co2SavedKg - a.co2SavedKg);
-    } else if (sortBy === 'grade') {
-      result.sort((a, b) => b.healthCard.cosmeticScore - a.healthCard.cosmeticScore);
-    }
-
-    setFilteredProducts(result);
-
-    // Nova AI Integration
-    if (result.length > 0) {
+    if (filteredProducts.length > 0) {
       novaSearchBuyers();
       const timer = setTimeout(() => {
         novaMatchFound({
-          count: result.length * 3 + Math.floor(Math.random() * 5),
+          count: totalCount * 3 + Math.floor(Math.random() * 5),
           radius: 5,
           productType: selectedCategory === 'All' ? 'items' : selectedCategory.toLowerCase()
         });
       }, 1200);
       return () => clearTimeout(timer);
     }
-  }, [products, selectedCategory, selectedCondition, maxPrice, sortBy, searchQuery]);
+  }, [totalCount]);
 
   const clearFilters = () => {
-    setSelectedCategory('All');
-    setSelectedCondition('All');
-    setMaxPrice(1000);
-    setSortBy('featured');
-    setSearchQuery('');
     router.push('/marketplace');
   };
 
@@ -282,9 +238,12 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
         <div className="relative flex-grow max-w-md mx-4 hidden lg:block">
           <input 
             type="text" 
-            placeholder="Search circular catalogue..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search circular catalogue (Press Enter)..." 
+            defaultValue={searchQuery}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') updateFilter('search', e.currentTarget.value);
+            }}
+            onBlur={(e) => updateFilter('search', e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-800 focus:outline-none focus:border-amazon-orange focus:ring-1 focus:ring-amazon-orange transition shadow-sm"
           />
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -295,13 +254,12 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
           <span className="text-slate-500">Sort by:</span>
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            onChange={(e) => updateFilter('sortBy', e.target.value)}
             className="border border-slate-300 bg-white rounded-lg px-2.5 py-1.5 cursor-pointer text-slate-700 outline-none focus:border-amazon-orange font-bold"
           >
             <option value="featured">Featured Hub</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
-            <option value="co2">Highest CO2 Saved</option>
             <option value="grade">Highest Health Grade</option>
           </select>
         </div>
@@ -327,14 +285,11 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
           {/* Facet 1: Category */}
           <div className="space-y-2">
             <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Category</h4>
-            <div className="flex flex-col gap-2 text-xs text-slate-700 font-bold">
-              {['All', 'Electronics', 'Home & Kitchen', 'Apparel', 'Books/Media'].map((cat) => (
+            <div className="flex flex-col gap-2 text-xs text-slate-700 font-bold max-h-48 overflow-y-auto">
+              {['All', 'Electronics', 'Home & Kitchen', 'Apparel', 'Books/Media', 'Shoes'].map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => {
-                    setSelectedCategory(cat);
-                    router.push(cat === 'All' ? '/marketplace' : `/marketplace?category=${encodeURIComponent(cat)}`);
-                  }}
+                  onClick={() => updateFilter('category', cat)}
                   className={`text-left hover:text-amazon-orange transition cursor-pointer ${
                     selectedCategory === cat ? 'font-black text-amazon-orange pl-1 border-l-2 border-amazon-orange' : ''
                   }`}
@@ -345,19 +300,71 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
             </div>
           </div>
 
-          {/* Facet 2: Condition */}
+          {/* Facet 2: Brand */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Brand</h4>
+            <div className="flex flex-col gap-2 text-xs text-slate-700 font-bold max-h-40 overflow-y-auto">
+              <button
+                onClick={() => updateFilter('brand', 'All')}
+                className={`text-left hover:text-amazon-orange transition cursor-pointer ${
+                  selectedBrand === 'All' ? 'font-black text-amazon-orange pl-1 border-l-2 border-amazon-orange' : ''
+                }`}
+              >
+                All Brands
+              </button>
+              {uniqueBrands.map((brand) => (
+                <button
+                  key={brand}
+                  onClick={() => updateFilter('brand', brand)}
+                  className={`text-left hover:text-amazon-orange transition cursor-pointer ${
+                    selectedBrand === brand ? 'font-black text-amazon-orange pl-1 border-l-2 border-amazon-orange' : ''
+                  }`}
+                >
+                  {brand}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Facet 3: Condition */}
           <div className="space-y-2">
             <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Condition Grade</h4>
             <div className="flex flex-col gap-2 text-xs text-slate-700 font-bold">
               {['All', 'like_new', 'very_good', 'good', 'acceptable'].map((cond) => (
                 <button
                   key={cond}
-                  onClick={() => setSelectedCondition(cond)}
+                  onClick={() => updateFilter('condition', cond)}
                   className={`text-left hover:text-amazon-orange transition cursor-pointer ${
                     selectedCondition === cond ? 'font-black text-amazon-orange pl-1 border-l-2 border-amazon-orange' : ''
                   }`}
                 >
                   {cond === 'All' ? 'All Grades' : getConditionLabel(cond as Product['condition'])}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Facet 4: Location */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Location</h4>
+            <div className="flex flex-col gap-2 text-xs text-slate-700 font-bold max-h-40 overflow-y-auto">
+              <button
+                onClick={() => updateFilter('location', 'All')}
+                className={`text-left hover:text-amazon-orange transition cursor-pointer ${
+                  selectedLocation === 'All' ? 'font-black text-amazon-orange pl-1 border-l-2 border-amazon-orange' : ''
+                }`}
+              >
+                Anywhere
+              </button>
+              {uniqueLocations.map((loc) => (
+                <button
+                  key={loc}
+                  onClick={() => updateFilter('location', loc)}
+                  className={`text-left hover:text-amazon-orange transition cursor-pointer ${
+                    selectedLocation === loc ? 'font-black text-amazon-orange pl-1 border-l-2 border-amazon-orange' : ''
+                  }`}
+                >
+                  {loc}
                 </button>
               ))}
             </div>
@@ -375,7 +382,7 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
               max="1000"
               step="10"
               value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
+              onChange={(e) => updateFilter('maxPrice', e.target.value)}
               className="w-full accent-amazon-orange cursor-pointer h-1.5 bg-slate-200 rounded"
             />
           </div>
@@ -548,6 +555,29 @@ function MarketplaceContent({ initialItems }: { initialItems: any[] }) {
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-8 mb-4">
+              <button 
+                disabled={currentPage <= 1}
+                onClick={() => updateFilter('page', String(currentPage - 1))}
+                className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-bold disabled:opacity-50 hover:bg-slate-50 hover:border-slate-400 cursor-pointer transition shadow-sm text-slate-700"
+              >
+                Previous
+              </button>
+              <div className="text-sm font-extrabold text-slate-600 px-4 bg-slate-100 py-2 rounded-lg border border-slate-200">
+                Page {currentPage} of {totalPages}
+              </div>
+              <button 
+                disabled={currentPage >= totalPages}
+                onClick={() => updateFilter('page', String(currentPage + 1))}
+                className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-bold disabled:opacity-50 hover:bg-slate-50 hover:border-slate-400 cursor-pointer transition shadow-sm text-slate-700"
+              >
+                Next
+              </button>
             </div>
           )}
         </main>

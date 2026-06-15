@@ -9,9 +9,10 @@ import Image from 'next/image';
 
 const defaultQuickActions = [
   'Explain return decisions',
-  'Show why item was flagged',
-  'Explain refund timelines',
-  'Track sustainability impact'
+  'Find laptops under ₹30,000',
+  'Show my product passport',
+  'How much carbon did I save?',
+  'Why was this item rated Good?'
 ];
 
 export default function NovaChat() {
@@ -58,7 +59,8 @@ export default function NovaChat() {
         setQuickActions(defaultQuickActions.slice(0, 3));
       }
     } catch (err) {
-      appendChatMessage({ role: 'assistant', content: "Nova ran into an issue while verifying your request. Trying alternatives... 🐝" });
+      appendChatMessage({ role: 'assistant', content: "I'm having a little trouble connecting to my central servers right now. Can you please try asking again in a moment? 🐝" });
+      setQuickActions(defaultQuickActions.slice(0, 3));
     } finally {
       setIsTyping(false);
     }
@@ -102,7 +104,7 @@ export default function NovaChat() {
               <Image src="/images/nova/happy.png" alt="Nova" fill className="object-contain" />
             </div>
             <div className="bg-white border border-slate-200 text-slate-800 p-3 rounded-2xl rounded-tl-sm shadow-sm text-sm">
-              Hi! I'm Nova 🐝. I'm your AI operations assistant. I can explain return decisions, show why an item was flagged, explain refund timelines, and track your sustainability impact.
+              Hi! I'm Nova 🐝. I'm your AI platform copilot. I can help you search the marketplace, explain our sustainability impact, clarify return policies, or review product health cards. How can I assist you today?
             </div>
           </div>
         )}
